@@ -1,5 +1,11 @@
-REGRAS DO CODIGO:
+Sobre o BOIDS: https://vanhunteradams.com/Pico/Animal_Movement/Boids-algorithm.html
 
+Basicamente três regras são aplicadas para que um fluxo de boids aconteça de forma interessante.
+    - Separação:    Responsavel pela não-colisão de um boid em um certo raio;
+    - Alinhamento:  Responsável pela direção geral de um boid
+    - Coesão:       Responsável pela posição de um boid, que gera grupos em todos os boids.
+
+REGRAS DO CODIGO:
 1. Todas funcoes em C devem depender apenas dos argumentos passados a elas, sem depender de variaveis globais;
 2. Alocou memoria em C, deve liberar a memoria alocada;
 3. Sempre tipar as variaveis em Python;
