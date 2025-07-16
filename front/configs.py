@@ -33,15 +33,3 @@ def validate_library_path():
         raise FileNotFoundError(error_msg + debug_info)
     
     return True
-
-# def get_library_info():
-#     """
-#     Retorna informações sobre a biblioteca
-#     """
-#     return {
-#         "platform": globals.platform_system,
-#         "path": globals.lib_path,
-#         "exists": os.path.exists(globals.lib_path) if globals.lib_path else False,
-#         "current_dir": globals.current_dir,
-#         "loaded": globals.library_loaded
-#     }
