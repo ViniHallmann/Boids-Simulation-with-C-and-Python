@@ -114,12 +114,13 @@ Boids* initialize_boids(int count, int screen_width, int screen_height) {
     float spawn_radius = 100.0f; //
 
     for (int i = 0; i < count; i++) {
-        /* PADRAO
+        ///* PADRAO
         boids->entities[i].position.x = (float)(rand() % 100);
         boids->entities[i].position.y = (float)(rand() % 100);
         boids->entities[i].velocity.vx = (float)(rand() % 10 - 5);
         boids->entities[i].velocity.vy = (float)(rand() % 10 - 5);
-        */
+        //*/
+
         /* NASCER NO MEIO EM UM QUADRADO DE 50x50
         boids->entities[i].position.x = center_x - 25 + (rand() % 50);
         boids->entities[i].position.y = center_y - 25 + (rand() % 50);
@@ -132,7 +133,7 @@ Boids* initialize_boids(int count, int screen_width, int screen_height) {
         boids->entities[i].velocity.vy = (float)(rand() % 10 - 5);
         */
         
-        ///* NASCER EM UM CIRCULO
+        /* NASCER EM UM CIRCULO
         float angle = ((float)rand() / RAND_MAX) * 2.0f * M_PI;
         float radius = ((float)rand() / RAND_MAX) * spawn_radius;
 
@@ -141,7 +142,7 @@ Boids* initialize_boids(int count, int screen_width, int screen_height) {
         
         boids->entities[i].velocity.vx = cosf(angle) * 2.0f;
         boids->entities[i].velocity.vy = sinf(angle) * 2.0f;
-        //*/
+        */
 
         /* NASCER NO CANTO SUPERIOR ESQUERDO
         */
@@ -184,30 +185,6 @@ void free_boids(Boids* boids) {
 static void apply_flocking_rules(Boids* boids, Grid* grid, Velocity* new_velocities, float visual_range_sq, float protected_range_sq, float centering_factor, float matching_factor, float avoid_factor) {
     #pragma omp parallel for
     for (int i = 0; i < boids->count; i++) {
-        // Entity* boid_i = &boids->entities[i];
-        // float xpos_avg = 0, ypos_avg = 0, xvel_avg = 0, yvel_avg = 0;
-        // float close_dx = 0, close_dy = 0;
-        // int neighboring_boids = 0;
-
-        // for (int j = 0; j < boids->count; j++) {
-        //     if (i == j) continue;
-        //     Entity* boid_j = &boids->entities[j];
-        //     float dx = boid_i->position.x - boid_j->position.x;
-        //     float dy = boid_i->position.y - boid_j->position.y;
-        //     float squared_distance = dx * dx + dy * dy;
-
-        //     if (squared_distance < protected_range_sq) {
-        //         close_dx += dx;
-        //         close_dy += dy;
-        //     } else if (squared_distance < visual_range_sq) {
-        //         xpos_avg += boid_j->position.x;
-        //         ypos_avg += boid_j->position.y;
-        //         xvel_avg += boid_j->velocity.vx;
-        //         yvel_avg += boid_j->velocity.vy;
-        //         neighboring_boids++;
-        //     }
-        // }
-
         Entity* boid_i = &boids->entities[i];
         float xpos_avg = 0, ypos_avg = 0, xvel_avg = 0, yvel_avg = 0;
         float close_dx = 0, close_dy = 0;
@@ -312,9 +289,8 @@ void update_boids(Boids* boids, Grid *grid, float visual_range, float protected_
     for (int i = 0; i < boids->count; i++) {
         add_to_grid(grid, &boids->entities[i]);
     }
+    
     apply_flocking_rules(boids, grid, new_velocities, visual_range_sq, protected_range_sq, centering_factor, matching_factor, avoid_factor);
-
-    //apply_flocking_rules(boids, new_velocities, visual_range_sq, protected_range_sq, centering_factor, matching_factor, avoid_factor);
 
     for (int i = 0; i < boids->count; i++) {
         Entity* boid = &boids->entities[i];

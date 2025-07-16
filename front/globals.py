@@ -21,7 +21,7 @@ SCREEN_WIDTH_MARGIN:    int  = 200
 SCREEN_HEIGHT_MARGIN:   int = 100
 MARGIN:                 int = 175
 
-NUM_BIRDS:      int     = 7000
+NUM_BIRDS:      int     = 5000
 BIRD_WIDTH:     int     = 1
 BIRD_RADIUS:    float   = 2.5
 

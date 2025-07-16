@@ -68,25 +68,6 @@ class Grid(ctypes.Structure):
         ("cells", ctypes.POINTER(ctypes.POINTER(BoidNode))),
     ]
 ##################################################################################
-
-# CHAMADAS A FUNÇÕES DA BIBLIOTECA C
-# MINHA IDEIA EH FAZER COM QUE TODAS CHAMADAS SEJAM FEITAS AQUI PARA FILTRAR O QUE ESTA SENDO CHAMADO 
-# E SE ESTA SENDO PASSADO CORRETAMENTE OS PARAMETROS
-def call_c(nomefuncao: str = "print_message"):
-    """
-    Chama a função da biblioteca C
-    """
-    if not globals.library_loaded:  return False
-    
-    try:
-        globals.boids_lib.__getattr__(nomefuncao)()  
-        return True
-        
-    except Exception as e:
-        print(f"Erro ao chamar função da biblioteca: {e}")
-        return False
-##################################################################################
-
 # UTIL
 # CRIAR utils.py PARA FUNCOES UTILITARIAS
 def load_library():
@@ -230,7 +211,10 @@ def main():
             pos_x = int(boid_entity.position.x)
             pos_y = int(boid_entity.position.y)
             pygame.draw.circle(screen, globals.BIRD_COLOR, (pos_x, pos_y), globals.BIRD_RADIUS, globals.BIRD_WIDTH)
-
+            # if i < globals.NUM_BIRDS // 2:
+            #     pygame.draw.circle(screen, globals.BIRD_COLOR, (pos_x, pos_y), globals.BIRD_RADIUS, globals.BIRD_WIDTH)
+            # else:
+            #     pygame.draw.circle(screen, (255, 0, 0), (pos_x, pos_y), globals.BIRD_RADIUS, globals.BIRD_WIDTH)
         pygame.display.flip()
         clock.tick(30)
 
