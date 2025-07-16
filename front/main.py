@@ -152,6 +152,9 @@ def set_functions_args():
             ctypes.c_int            # margin
         ]
         globals.boids_lib.update_boids.restype = None
+
+        globals.boids_lib.initialize_seed.argtypes = []
+        globals.boids_lib.initialize_seed.restype = None
         
         return True
         
@@ -203,6 +206,7 @@ def main():
     Função principal que carrega a biblioteca, inicializa o Pygame e executa o loop de simulação/desenho.
     """
     setup()
+    globals.boids_lib.initialize_seed()
     screen, clock = initialize_pygame()
     boids = globals.boids_lib.initialize_boids(
         globals.NUM_BIRDS,
