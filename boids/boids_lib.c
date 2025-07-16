@@ -4,12 +4,6 @@
 #include <math.h>
 #include <omp.h> 
 
-/* TO-DO LIST
-    * 0. CRIAR MAKEFILE PARA COMPILAR TUDO NUMA TACADA SO
-    * 1. Implementar a lógica de atualização dos boids.
-    * 2. Adicionar rcoesao alinhamento e separação.
-*/
-
 // PARA COMPILAR C: gcc -shared -o libboids.so -fPIC boids_lib.c
 typedef struct {
     float x, y;
@@ -95,7 +89,6 @@ void add_to_grid(Grid* grid, Entity* boid) {
 }
 
 Boids* create_boids(int count) {
-    srand(time(NULL));
 
     Boids *boids = (Boids*) malloc(sizeof(Boids));
     if (!boids) return NULL; 
@@ -118,13 +111,64 @@ Boids* initialize_boids(int count, int screen_width, int screen_height) {
 
     float center_x = screen_width / 2.0f;
     float center_y = screen_height / 2.0f;
+    float spawn_radius = 100.0f; //
 
     for (int i = 0; i < count; i++) {
-        boids->entities[i].position.x = center_x - 25 + (rand() % 50);
-        boids->entities[i].position.y = center_y - 25 + (rand() % 50);
-        
+        /* PADRAO
+        boids->entities[i].position.x = (float)(rand() % 100);
+        boids->entities[i].position.y = (float)(rand() % 100);
         boids->entities[i].velocity.vx = (float)(rand() % 10 - 5);
         boids->entities[i].velocity.vy = (float)(rand() % 10 - 5);
+        */
+        /* NASCER NO MEIO EM UM QUADRADO DE 50x50
+        boids->entities[i].position.x = center_x - 25 + (rand() % 50);
+        boids->entities[i].position.y = center_y - 25 + (rand() % 50);
+        */
+        
+        /* NASCER RANDOMICO NA TELA
+        boids->entities[i].position.x = (float)(rand() % screen_width);
+        boids->entities[i].position.y = (float)(rand() % screen_height);
+        boids->entities[i].velocity.vx = (float)(rand() % 10 - 5);
+        boids->entities[i].velocity.vy = (float)(rand() % 10 - 5);
+        */
+        
+        ///* NASCER EM UM CIRCULO
+        float angle = ((float)rand() / RAND_MAX) * 2.0f * M_PI;
+        float radius = ((float)rand() / RAND_MAX) * spawn_radius;
+
+        boids->entities[i].position.x = center_x + radius * cosf(angle);
+        boids->entities[i].position.y = center_y + radius * sinf(angle);
+        
+        boids->entities[i].velocity.vx = cosf(angle) * 2.0f;
+        boids->entities[i].velocity.vy = sinf(angle) * 2.0f;
+        //*/
+
+        /* NASCER NO CANTO SUPERIOR ESQUERDO
+        */
+
+        /* NASCER EM CIMA COM VELOCIDADE PARA BAIXO
+        boids->entities[i].position.x = (float)(rand() % screen_width);
+        boids->entities[i].position.y = (float)(rand() % 50); // Nascem numa faixa de 50px no topo
+        
+        boids->entities[i].velocity.vx = ((float)(rand() % 200 - 100) / 100.0f); // -1.0 a 1.0
+        boids->entities[i].velocity.vy = 2.0f + ((float)rand() / RAND_MAX);   
+        */
+
+        /* 50% DE UM LADO 50% DO OUTRO
+        if (i < count / 2) {
+            boids->entities[i].position.x = (float)(rand() % 100); 
+            boids->entities[i].position.y = (float)(rand() % screen_height);
+            boids->entities[i].velocity.vx = 2.0f + ((float)rand() / RAND_MAX);
+            boids->entities[i].velocity.vy = ((float)(rand() % 200 - 100) / 100.0f);
+        } 
+        else {
+            boids->entities[i].position.x = (float)(screen_width - 100 + (rand() % 100));
+            boids->entities[i].position.y = (float)(rand() % screen_height);
+            boids->entities[i].velocity.vx = -2.0f - ((float)rand() / RAND_MAX);
+            boids->entities[i].velocity.vy = ((float)(rand() % 200 - 100) / 100.0f);
+        }
+        */
+        
     }
     return boids;
 }
@@ -226,6 +270,7 @@ static void apply_flocking_rules(Boids* boids, Grid* grid, Velocity* new_velocit
 
 static void enforce_speed_limits(Entity* boid, float max_speed, float min_speed) {
     float speed = sqrtf(boid->velocity.vx * boid->velocity.vx + boid->velocity.vy * boid->velocity.vy);
+    if (speed == 0) return;
     if (speed > max_speed) {
         boid->velocity.vx = (boid->velocity.vx / speed) * max_speed;
         boid->velocity.vy = (boid->velocity.vy / speed) * max_speed;
@@ -282,4 +327,8 @@ void update_boids(Boids* boids, Grid *grid, float visual_range, float protected_
         boid->position.y += boid->velocity.vy;
     }
     free(new_velocities);
+}
+
+void initialize_seed(void) {
+    srand(time(NULL));
 }
