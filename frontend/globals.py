@@ -1,10 +1,4 @@
 import platform
-import os
-
-boids_lib:       str = None
-lib_path:        str = None
-platform_system: str = platform.system()
-current_dir:     str = os.getcwd()
 
 TURN_FACTOR:      float = 0.2
 VISUAL_RANGE:     float = 45.0
@@ -28,12 +22,12 @@ BIRD_RADIUS:    float   = 2.5
 BIRD_COLOR:         tuple = (255, 255, 255)
 BACKGROUND_COLOR:   tuple = (10, 20, 40)
 
+FPS: int = 60
 
+PLATFORM_SYSTEM: str = platform.system()
 SUPPORTED_PLATFORMS = ["Windows", "Darwin", "Linux"]
 LIBRARY_EXTENSIONS = {
     "Windows": "dll",
     "Darwin": "so",
     "Linux": "so"
 }
-
-library_loaded: bool = False
