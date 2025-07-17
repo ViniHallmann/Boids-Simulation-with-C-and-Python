@@ -18,22 +18,53 @@ Boids* create_boids(int count) {
     return boids;
 }
 
-// int mode eh gambiarra. Transformar em ENUM e tratar com SWITCH!
 Boids* initialize_boids(int count, int screen_width, int screen_height, int mode) {
     Boids *boids = create_boids(count);
     if (!boids) return NULL;
 
+    float center_x = screen_width / 2.0f;
+    float center_y = screen_height / 2.0f;
+    float spawn_radius = 100.0f; 
+
     for (int i = 0; i < count; i++) {
-        if (mode == 0) {
-            boids->entities[i].position.x = (float)(rand() % 100);
-            boids->entities[i].position.y = (float)(rand() % 100);
-            boids->entities[i].velocity.vx = (float)(rand() % 10 - 5);
-            boids->entities[i].velocity.vy = (float)(rand() % 10 - 5);
-        } else {
-            boids->entities[i].position.x = (float)(screen_width - 100 + (rand() % 100));
-            boids->entities[i].position.y = (float)(screen_height - 100 + (rand() % 100));
-            boids->entities[i].velocity.vx = (float)(rand() % 10 - 5);
-            boids->entities[i].velocity.vy = (float)(rand() % 10 - 5);
+        switch (mode) {
+            case SPAWN_TOP_LEFT: 
+                boids->entities[i].position.x = (float)(rand() % 100);
+                boids->entities[i].position.y = (float)(rand() % 100);
+                boids->entities[i].velocity.vx = 2.0f; 
+                boids->entities[i].velocity.vy = 0.0f;
+                break;
+
+            case SPAWN_TOP_RIGHT: 
+                boids->entities[i].position.x = (float)(screen_width - 100 + (rand() % 100));
+                boids->entities[i].position.y = (float)(rand() % 100);
+                boids->entities[i].velocity.vx = -2.0f; 
+                boids->entities[i].velocity.vy = 0.0f;
+                break;
+
+            case SPAWN_IN_CIRCLE: { 
+                float angle = ((float)rand() / RAND_MAX) * 2.0f * M_PI;
+                float radius = ((float)rand() / RAND_MAX) * spawn_radius;
+                boids->entities[i].position.x = center_x + radius * cosf(angle);
+                boids->entities[i].position.y = center_y + radius * sinf(angle);
+                boids->entities[i].velocity.vx = cosf(angle) * 2.0f;
+                boids->entities[i].velocity.vy = sinf(angle) * 2.0f;
+                break;
+            }
+                
+            case SPAWN_RANDOM: 
+                boids->entities[i].position.x = (float)(rand() % screen_width);
+                boids->entities[i].position.y = (float)(rand() % screen_height);
+                boids->entities[i].velocity.vx = (float)(rand() % 10 - 5);
+                boids->entities[i].velocity.vy = (float)(rand() % 10 - 5);
+                break;
+
+            default: 
+                boids->entities[i].position.x = (float)(rand() % 100);
+                boids->entities[i].position.y = (float)(rand() % 100);
+                boids->entities[i].velocity.vx = 2.0f; 
+                boids->entities[i].velocity.vy = 0.0f;
+                break;
         }
         /* NASCER NO MEIO EM UM QUADRADO DE 50x50
 
