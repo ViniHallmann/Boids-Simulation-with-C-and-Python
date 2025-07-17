@@ -1,4 +1,5 @@
 import ctypes
+from enum import IntEnum
 
 class Position(ctypes.Structure):
     _fields_ = [("x", ctypes.c_float), ("y", ctypes.c_float)]
@@ -27,3 +28,11 @@ class Grid(ctypes.Structure):
         ("cell_size", ctypes.c_float),
         ("cells", ctypes.POINTER(ctypes.POINTER(BoidNode))),
     ]
+
+class SpawnMode(IntEnum):
+    SPAWN_TOP_LEFT = 0
+    SPAWN_TOP_RIGHT = 1
+    SPAWN_IN_CIRCLE = 2
+    SPAWN_RANDOM = 3
+    
+

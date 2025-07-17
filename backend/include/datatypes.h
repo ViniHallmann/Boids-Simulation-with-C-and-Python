@@ -31,4 +31,11 @@ typedef struct {
     BoidNode** cells;
 } Grid;
 
+typedef enum {
+    SPAWN_TOP_LEFT,
+    SPAWN_TOP_RIGHT,
+    SPAWN_IN_CIRCLE,
+    SPAWN_RANDOM
+} SpawnMode;
+
 #endif
