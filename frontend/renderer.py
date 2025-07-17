@@ -10,17 +10,8 @@ class Renderer:
         self.screen = pygame.display.set_mode((globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT))
         self.blur_surface = pygame.Surface((globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT), pygame.SRCALPHA)
         self.blur_surface.fill((0, 0, 0, globals.BLUR_TRANSPARENCY_VALUE))
-        # self.background_image = pygame.image.load("images/space.jpg").convert()
-        # self.background_image = pygame.transform.scale(
-        #     self.background_image, (globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT)
-        # )
-
-        self.boid_size = 6
-        self.model_triangle = [
-            (self.boid_size * 0.75, 0),                           # Ponta da frente
-            (self.boid_size * -0.5, self.boid_size * -0.5),       # Ponto de trás (inferior)
-            (self.boid_size * -0.5, self.boid_size * 0.5)         # Ponto de trás (superior)
-        ]
+        self.bird_size = globals.BIRD_SIZE
+        self.model_triangle = [ (self.bird_size * 0.75, 0), (self.bird_size * -0.5, self.bird_size * -0.5), (self.bird_size * -0.5, self.bird_size * 0.5)]
         pygame.display.set_caption("P: Simulação de Boids (C + Python)")
         print("P: Renderer inicializado.")
 
@@ -66,10 +57,9 @@ class Renderer:
 
             pygame.draw.polygon(self.screen, globals.BIRD_COLOR, rotated_points, 1)
 
-            # Desenho do círculo ao redor do boid
+            # ANTES ERA FEITO ASSIM PRA DESENHAR OS BOIDS
             # pos = (int(entity.position.x), int(entity.position.y))
             # pygame.draw.circle(self.screen, globals.BIRD_COLOR, pos, globals.BIRD_RADIUS, globals.BIRD_WIDTH)
-
 
         if globals.MARGIN_LINE:
             margin_color = (100, 100, 100)
@@ -80,6 +70,7 @@ class Renderer:
                 globals.SCREEN_HEIGHT - 2 * globals.MARGIN
             )
 
+            # DESENHO DA MARGEM RETA
             #pygame.draw.rect(self.screen, margin_color, margin_rect, 2)
             self._draw_dashed_rect(self.screen, margin_color, margin_rect, width=2, dash_length=10)
 

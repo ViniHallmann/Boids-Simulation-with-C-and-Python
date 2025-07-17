@@ -20,6 +20,7 @@ BACKGROUND_COLOR:   tuple = (10, 20, 40)
 FPS: int = 60   
 BLUR: bool = False
 BLUR_TRANSPARENCY_VALUE: int = 15
+BIRD_SIZE: int = 6
 
 # VARIAVEIS CRITICAS - So podem ser alteradas em tempo de execucao caso o "run" do programa seja reiniciado. 
 # Pra rodar em tempo de execucao vai precisar dar um cleanup e instanciar nova simulation()
