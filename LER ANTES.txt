@@ -9,4 +9,3 @@ REGRAS DO CODIGO:
 1. Todas funcoes em C devem depender apenas dos argumentos passados a elas, sem depender de variaveis globais;
 2. Alocou memoria em C, deve liberar a memoria alocada;
 3. Sempre tipar as variaveis em Python;
-
