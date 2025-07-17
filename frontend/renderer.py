@@ -15,7 +15,7 @@ class Renderer:
         #     self.background_image, (globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT)
         # )
 
-        self.boid_size = 3
+        self.boid_size = 6
         self.model_triangle = [
             (self.boid_size * 0.75, 0),                           # Ponta da frente
             (self.boid_size * -0.5, self.boid_size * -0.5),       # Ponto de trás (inferior)
@@ -24,10 +24,9 @@ class Renderer:
         pygame.display.set_caption("P: Simulação de Boids (C + Python)")
         print("P: Renderer inicializado.")
 
-    #MELHORAR ISSO AQUI DEPOIS
     def _draw_dashed_rect(self, surface, color, rect, width=1, dash_length=10):
         """
-        Desenha um retângulo tracejado.
+        Molde de retângulo tracejado.
         """
         x, y, w, h = rect
         
@@ -43,44 +42,35 @@ class Renderer:
         """
         Desenha todos os boids na tela.
         """
-        #IMAGEM DE BACKGROUND
+
         #self.screen.blit(self.background_image, (0, 0))
+
         if globals.BLUR:
             self.screen.blit(self.blur_surface, (0, 0))
         else:
             self.screen.fill(globals.BACKGROUND_COLOR)
+
         for i in range(globals.NUM_BIRDS):
             entity = simulation.boids1.contents.entities[i]
-            pos = (int(entity.position.x), int(entity.position.y))
-            pygame.draw.circle(self.screen, globals.BIRD_COLOR, pos, globals.BIRD_RADIUS, globals.BIRD_WIDTH)
-
-        #CODIGO DO GEMINI PRA GERAR TRIANGULO ROTACIONADO
-            # pos_x = entity.position.x
-            # pos_y = entity.position.y
-            # vel_x = entity.velocity.vx
-            # vel_y = entity.velocity.vy
-            
-            # # 2. Calcular o ângulo da direção a partir da velocidade
-            # # Usamos atan2(y, x) para obter o ângulo correto em todos os quadrantes
-            # angle = math.atan2(vel_y, vel_x)
-            
-            # # 3. Rotacionar e transladar os pontos do triângulo modelo
-            # rotated_points = []
-            # for mx, my in self.model_triangle:
-            #     # Rotaciona o ponto
-            #     rx = (mx * math.cos(angle)) - (my * math.sin(angle))
-            #     ry = (mx * math.sin(angle)) + (my * math.cos(angle))
+            angle = math.atan2(entity.velocity.vy, entity.velocity.vx)
+            rotated_points = []
+            for mx, my in self.model_triangle:
                 
-            #     # Translada o ponto para a posição do boid na tela
-            #     screen_x = rx + pos_x
-            #     screen_y = ry + pos_y
-            #     rotated_points.append((screen_x, screen_y))
+                rx = (mx * math.cos(angle)) - (my * math.sin(angle))
+                ry = (mx * math.sin(angle)) + (my * math.cos(angle))
 
-            # # 4. Desenhar o polígono (triângulo) rotacionado
-            # # O 0 no final significa que o triângulo será preenchido
-            # pygame.draw.polygon(self.screen, globals.BIRD_COLOR, rotated_points, 1)
-        
-        #MELHORAR ISSO AQUI DEPOIS
+                screen_x = rx + entity.position.x
+                screen_y = ry + entity.position.y
+
+                rotated_points.append((screen_x, screen_y))
+
+            pygame.draw.polygon(self.screen, globals.BIRD_COLOR, rotated_points, 1)
+
+            # Desenho do círculo ao redor do boid
+            # pos = (int(entity.position.x), int(entity.position.y))
+            # pygame.draw.circle(self.screen, globals.BIRD_COLOR, pos, globals.BIRD_RADIUS, globals.BIRD_WIDTH)
+
+
         if globals.MARGIN_LINE:
             margin_color = (100, 100, 100)
             margin_rect = pygame.Rect(
@@ -90,6 +80,7 @@ class Renderer:
                 globals.SCREEN_HEIGHT - 2 * globals.MARGIN
             )
 
+            #pygame.draw.rect(self.screen, margin_color, margin_rect, 2)
             self._draw_dashed_rect(self.screen, margin_color, margin_rect, width=2, dash_length=10)
 
         pygame.display.flip()
