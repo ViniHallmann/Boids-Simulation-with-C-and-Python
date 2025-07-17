@@ -1,6 +1,7 @@
 import platform
 from c_definitions.c_structures import SpawnMode
 
+# VARIAVEIS NAO CRITICAS - Podem ser alteradas em tempo de execucao sem reiniciar o programa.
 TURN_FACTOR:      float = 0.2
 VISUAL_RANGE:     float = 45.0
 PROTECTED_RANGE:  float = 6.0
@@ -9,22 +10,21 @@ AVOID_FACTOR:     float = 0.05
 MATCHING_FACTOR:  float = 0.05
 MAX_SPEED:        float = 6.0
 MIN_SPEED:        float = 3.0
+MARGIN:                 int = 175
+MARGIN_LINE:            bool = True
+BIRD_WIDTH:     int     = 1
+BIRD_RADIUS:    float   = 2.5
+BIRD_COLOR:         tuple = (255, 255, 255)
+BACKGROUND_COLOR:   tuple = (10, 20, 40)
+FPS: int = 60
 
+# VARIAVEIS CRITICAS - So podem ser alteradas em tempo de execucao caso o "run" do programa seja reiniciado. 
+# Pra rodar em tempo de execucao vai precisar dar um cleanup e instanciar nova simulation()
 SCREEN_WIDTH:           int  = 900
 SCREEN_HEIGHT:          int = 650
 SCREEN_WIDTH_MARGIN:    int  = 200
 SCREEN_HEIGHT_MARGIN:   int = 100
-MARGIN:                 int = 175
-
-NUM_BIRDS:      int     = 5000
-BIRD_WIDTH:     int     = 1
-BIRD_RADIUS:    float   = 2.5
-
-BIRD_COLOR:         tuple = (255, 255, 255)
-BACKGROUND_COLOR:   tuple = (10, 20, 40)
-
-FPS: int = 60
-
+NUM_BIRDS:      int     = 1000
 PLATFORM_SYSTEM: str = platform.system()
 SUPPORTED_PLATFORMS = ["Windows", "Darwin", "Linux"]
 LIBRARY_EXTENSIONS = {

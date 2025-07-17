@@ -9,7 +9,7 @@ class Simulation:
         print("P: Inicializando estado da simulação...")
 
         self.boids1 = state.boids_lib.initialize_boids(
-            globals.NUM_BIRDS, globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT, globals.SpawnMode.SPAWN_IN_CIRCLE
+            globals.NUM_BIRDS, globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT, globals.SpawnMode.SPAWN_TOP_LEFT
         )
         self.grid1 = state.boids_lib.create_grid(
             globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT, globals.VISUAL_RANGE
