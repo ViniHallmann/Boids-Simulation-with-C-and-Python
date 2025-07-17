@@ -1,4 +1,5 @@
 import platform
+from c_definitions.c_structures import SpawnMode
 
 TURN_FACTOR:      float = 0.2
 VISUAL_RANGE:     float = 45.0
