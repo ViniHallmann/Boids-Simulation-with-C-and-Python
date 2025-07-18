@@ -26,7 +26,7 @@ class Simulation:
         """
         Chama a função de atualização da biblioteca C para avançar a simulação.
         """
-        state.boids_lib.update_boids(self.boids, self.grid, *self.update_args, *globals.MOUSE_POS)
+        state.boids_lib.update_boids(self.boids, self.grid, *self.update_args, *globals.MOUSE_POS, globals.MOUSE_MOTION, globals.MOUSE_FEAR, globals.MOUSE_ATTRACTION, globals.MOUSE_FEAR_RADIUS, globals.MOUSE_ATTRACTION_RADIUS)
 
     def cleanup(self):
         """

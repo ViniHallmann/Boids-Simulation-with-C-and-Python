@@ -1,8 +1,34 @@
 #include "simulation.h"
 #include "grid.h" 
-#include <stdlib.h>
-#include <math.h>
-#include <omp.h>
+
+static void enforce_mouse_events(Entity* boid, int mouse_x, int mouse_y, bool mouse_fear, bool mouse_attraction, int mouse_fear_radius, int mouse_attraction_radius){
+    if(mouse_fear){
+        float dx = boid->position.x - mouse_x;
+        float dy = boid->position.y - mouse_y;
+        float distance_sq = dx * dx + dy * dy;
+        if (distance_sq < mouse_fear_radius * mouse_fear_radius) {
+                float distance = sqrtf(distance_sq);
+                float avoid_factor = (mouse_fear_radius - distance) / mouse_fear_radius;
+                if (distance > 0) {
+                    boid->velocity.vx += (dx / distance) * avoid_factor;
+                    boid->velocity.vy += (dy / distance) * avoid_factor;
+                }
+            }
+        }
+        else if(mouse_attraction){
+            float dx = mouse_x - boid->position.x;
+            float dy = mouse_y - boid->position.y;
+            float distance_sq = dx * dx + dy * dy;
+            if (distance_sq < mouse_attraction_radius * mouse_attraction_radius) {
+                float distance = sqrtf(distance_sq);
+                float centering_factor = (mouse_attraction_radius - distance) / mouse_attraction_radius;
+                if (distance > 0) {
+                    boid->velocity.vx += (dx / distance) * centering_factor;
+                    boid->velocity.vy += (dy / distance) * centering_factor;
+                }
+            }
+        }
+}
 
 static void apply_flocking_rules(Boids* boids, Grid* grid, Velocity* new_velocities, float visual_range_sq, float protected_range_sq, float centering_factor, float matching_factor, float avoid_factor) {
     #pragma omp parallel for
@@ -84,7 +110,12 @@ static void enforce_screen_boundaries(Entity* boid, float turn_factor, int width
     if (boid->position.y > height - margin) boid->velocity.vy -= turn_factor;
 }
 
-void update_boids(Boids* boids, Grid *grid, float visual_range, float protected_range, float centering_factor, float matching_factor, float avoid_factor,float turn_factor, float max_speed, float min_speed, int screen_width, int screen_height, int margin) {
+void update_boids(Boids* boids, Grid *grid, 
+    float visual_range, float protected_range,
+    float centering_factor, float matching_factor, float avoid_factor,
+    float turn_factor, float max_speed, float min_speed,
+    int screen_width, int screen_height, int margin, int mouse_x, int mouse_y, bool mouse_motion,
+    bool mouse_fear, bool mouse_attraction, int mouse_fear_radius, int mouse_attraction_radius){
     if (!boids || boids->count == 0) return;
 
     Velocity* new_velocities = (Velocity*) malloc(boids->count * sizeof(Velocity));
@@ -104,8 +135,9 @@ void update_boids(Boids* boids, Grid *grid, float visual_range, float protected_
     for (int i = 0; i < boids->count; i++) {
         Entity* boid = &boids->entities[i];
         boid->velocity = new_velocities[i];
-
+        
         enforce_screen_boundaries(boid, turn_factor, screen_width, screen_height, margin);
+        mouse_motion ? enforce_mouse_events(boid, mouse_x, mouse_y, mouse_fear, mouse_attraction, mouse_fear_radius, mouse_attraction_radius) : (void)0;
         enforce_speed_limits(boid, max_speed, min_speed);
 
         boid->position.x += boid->velocity.vx;

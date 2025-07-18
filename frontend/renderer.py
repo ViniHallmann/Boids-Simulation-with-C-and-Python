@@ -42,7 +42,7 @@ class Renderer:
             self.screen.fill(globals.BACKGROUND_COLOR)
 
         for i in range(globals.NUM_BIRDS):
-            entity = simulation.boids1.contents.entities[i]
+            entity = simulation.boids.contents.entities[i]
             angle = math.atan2(entity.velocity.vy, entity.velocity.vx)
             rotated_points = []
             for mx, my in self.model_triangle:
