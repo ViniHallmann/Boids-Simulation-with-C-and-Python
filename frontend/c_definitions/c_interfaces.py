@@ -38,7 +38,7 @@ def _set_function_signatures():
     lib.update_boids.argtypes = [
         ctypes.POINTER(Boids), ctypes.POINTER(Grid), ctypes.c_float, ctypes.c_float,
         ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float,
-        ctypes.c_float, ctypes.c_float, ctypes.c_int, ctypes.c_int, ctypes.c_int
+        ctypes.c_float, ctypes.c_float, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int
     ]
     lib.update_boids.restype = None
 
