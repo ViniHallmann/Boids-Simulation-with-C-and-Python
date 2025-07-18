@@ -23,25 +23,25 @@ def _set_function_signatures():
     Define os tipos de argumento e retorno para as funções da lib C.
     """
     lib = state.boids_lib
-    lib.initialize_boids.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int]
-    lib.initialize_boids.restype = ctypes.POINTER(Boids)
+    lib.initialize_boids.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int] # num_boids, screen_width, screen_height, spawn_mode
+    lib.initialize_boids.restype = ctypes.POINTER(Boids) # Boids
 
-    lib.free_boids.argtypes = [ctypes.POINTER(Boids)]
+    lib.free_boids.argtypes = [ctypes.POINTER(Boids)] # Boids
     lib.free_boids.restype = None
 
-    lib.create_grid.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_float]
-    lib.create_grid.restype = ctypes.POINTER(Grid)
+    lib.create_grid.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_float] # screen_width, screen_height, cell_size
+    lib.create_grid.restype = ctypes.POINTER(Grid) # Grid
 
-    lib.free_grid.argtypes = [ctypes.POINTER(Grid)]
+    lib.free_grid.argtypes = [ctypes.POINTER(Grid)] # Grid
     lib.free_grid.restype = None
 
     lib.update_boids.argtypes = [
         ctypes.POINTER(Boids), ctypes.POINTER(Grid),
-        ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float,
-        ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float,
-        ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,
-        ctypes.c_bool, ctypes.c_bool, ctypes.c_bool,
-        ctypes.c_int, ctypes.c_int
+        ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, # visual_range, protected_range, centering_factor, matching_factor, avoid_factor
+        ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, # turn_factor, max_speed, min_speed
+        ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, # screen_width, screen_height, margin
+        ctypes.c_bool, ctypes.c_bool, ctypes.c_bool, # mouse_motion, mouse_fear, mouse_attraction
+        ctypes.c_int, ctypes.c_int # mouse_fear_radius, mouse_attraction_radius
     ]
     lib.update_boids.restype = None
 
