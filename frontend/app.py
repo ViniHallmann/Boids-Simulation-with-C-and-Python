@@ -20,7 +20,9 @@ class App:
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_q):
                 self.running = False
-
+            elif event.type == pygame.MOUSEMOTION:
+                globals.MOUSE_POS = pygame.mouse.get_pos()
+            
     def run(self):
         """
         Executa o loop principal da aplicação.
