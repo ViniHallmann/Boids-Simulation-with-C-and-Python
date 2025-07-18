@@ -21,6 +21,12 @@ FPS: int = 60
 BLUR: bool = False
 BLUR_TRANSPARENCY_VALUE: int = 15
 BIRD_SIZE: int = 6
+MOUSE_MOTION: bool = False
+MOUSE_POS: tuple = (0, 0)
+MOUSE_FEAR: bool = False
+MOUSE_ATTRACTION: bool = False  
+MOUSE_FEAR_RADIUS: int = 100
+MOUSE_ATTRACTION_RADIUS: int = 200
 
 # VARIAVEIS CRITICAS - So podem ser alteradas em tempo de execucao caso o "run" do programa seja reiniciado. 
 # Pra rodar em tempo de execucao vai precisar dar um cleanup e instanciar nova simulation()
