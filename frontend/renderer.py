@@ -1,8 +1,9 @@
 import pygame
 import globals
 import math
+from UI import UI
 class Renderer:
-    def __init__(self):
+    def __init__(self, clock):
         """
         Inicializa o Pygame e a janela de exibição.
         """
@@ -12,6 +13,7 @@ class Renderer:
         self.blur_surface.fill((0, 0, 0, globals.BLUR_TRANSPARENCY_VALUE))
         self.bird_size = globals.BIRD_SIZE
         self.model_triangle = [ (self.bird_size * 0.75, 0), (self.bird_size * -0.5, self.bird_size * -0.5), (self.bird_size * -0.5, self.bird_size * 0.5)]
+        self.UI = UI(self.screen, clock)
         pygame.display.set_caption("P: Simulação de Boids (C + Python)")
         print("P: Renderer inicializado.")
 
@@ -74,6 +76,7 @@ class Renderer:
             #pygame.draw.rect(self.screen, margin_color, margin_rect, 2)
             self._draw_dashed_rect(self.screen, margin_color, margin_rect, width=2, dash_length=10)
 
+        self.UI.draw_fps()
         pygame.display.flip()
 
     def cleanup(self):

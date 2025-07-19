@@ -9,8 +9,9 @@ class App:
         Inicializa os componentes principais da aplicação.
         """
         self.simulation = Simulation()
-        self.renderer = Renderer()
         self.clock = pygame.time.Clock()
+        self.renderer = Renderer(self.clock)
+        
         self.running = True
 
     def _handle_events(self):
