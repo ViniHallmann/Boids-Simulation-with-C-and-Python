@@ -78,6 +78,9 @@ class InputHandler:
         elif event.key == pygame.K_SPACE: # PAUSE/PLAY
             globals.PAUSED = not globals.PAUSED
             print(f"P: Simulação {'pausada' if globals.PAUSED else 'retomada'}.")
+        elif event.key == pygame.K_6:
+            globals.INFINITE_SCREEN = not globals.INFINITE_SCREEN
+            print(f"P: Tela infinita {'ativada' if globals.INFINITE_SCREEN else 'desativada'}.")
         
 
     def _mouse_motion(self, event):
