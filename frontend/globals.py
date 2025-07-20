@@ -4,8 +4,8 @@ from c_definitions.c_structures import SpawnMode
 # VARIAVEIS NAO CRITICAS - Podem ser alteradas em tempo de execucao sem reiniciar o programa.
 # Implementar uma interface para alterar essas variaveis em tempo de execucao.
 TURN_FACTOR:        float = 0.2
-VISUAL_RANGE:       float = 45.0
-PROTECTED_RANGE:    float = 6.0
+VISUAL_RANGE:       float = 75.0
+PROTECTED_RANGE:    float = 35.0
 CENTERING_FACTOR:   float = 0.0005
 AVOID_FACTOR:       float = 0.1
 MATCHING_FACTOR:    float = 0.05
@@ -38,7 +38,7 @@ SCREEN_WIDTH:           int = 900
 SCREEN_HEIGHT:          int = 650
 SCREEN_WIDTH_MARGIN:    int = 200
 SCREEN_HEIGHT_MARGIN:   int = 100
-NUM_BIRDS:              int = 1000
+NUM_BIRDS:              int = 10001
 PLATFORM_SYSTEM: str = platform.system()
 SUPPORTED_PLATFORMS = ["Windows", "Darwin", "Linux"]
 LIBRARY_EXTENSIONS = {
