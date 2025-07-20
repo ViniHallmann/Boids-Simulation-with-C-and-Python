@@ -35,11 +35,20 @@ class Renderer:
         """
         Desenha um boid na tela.
         """
-        angle = math.atan2(entity.velocity.vy, entity.velocity.vx)
+        vx, vy = entity.velocity.vx, entity.velocity.vy
+        speed = math.sqrt(vx*vx + vy*vy)
+
+        if speed == 0:
+            cos_a = 1.0
+            sin_a = 0.0
+        else:
+            cos_a = vx / speed
+            sin_a = vy / speed
+
         rotated_points = []
         for mx, my in self.model_triangle:
-            rx = (mx * math.cos(angle)) - (my * math.sin(angle))
-            ry = (mx * math.sin(angle)) + (my * math.cos(angle))
+            rx = (mx * cos_a) - (my * sin_a)
+            ry = (mx * sin_a) + (my * cos_a)
 
             screen_x = rx + entity.position.x
             screen_y = ry + entity.position.y
@@ -97,7 +106,8 @@ class Renderer:
         for i in range(globals.NUM_BIRDS):
             entity = simulation.boids.contents.entities[i]
             self.draw_boid(entity)
-            self.draw_boids_range(simulation)
+        
+        self.draw_boids_range(simulation)
             
         if globals.MARGIN_LINE:
             self.draw_margins(globals.MARGIN_WIDTH, globals.MARGIN_DASH_LENGTH)
