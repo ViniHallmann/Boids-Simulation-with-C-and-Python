@@ -24,7 +24,7 @@ BIRD_SIZE: int = 3
 MOUSE_MOTION: bool = False
 MOUSE_POS: tuple = (0, 0)
 MOUSE_FEAR: bool = False
-MOUSE_ATTRACTION: bool = True  
+MOUSE_ATTRACTION: bool = False 
 MOUSE_FEAR_RADIUS: int = 100
 MOUSE_ATTRACTION_RADIUS: int = 200
 
