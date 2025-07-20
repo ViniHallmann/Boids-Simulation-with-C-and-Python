@@ -55,6 +55,14 @@ class InputHandler:
         elif event.key == pygame.K_v: 
             globals.DRAW_VISUAL_RANGE = not globals.DRAW_VISUAL_RANGE
             print(f"P: Desenho do raio de visualização {'ativado' if globals.DRAW_VISUAL_RANGE else 'desativado'}.")
+        elif event.key == pygame.K_d:
+            globals.DRAW_PROTECTED_RANGE = True
+            globals.DRAW_VISUAL_RANGE = True
+            print("P: Modo debug ativado.")
+        elif event.key == pygame.K_f:
+            globals.DRAW_PROTECTED_RANGE = False
+            globals.DRAW_VISUAL_RANGE = False
+            print("P: Modo debug desativado.")
 
     def _mouse_motion(self, event):
         """
@@ -76,3 +84,4 @@ class InputHandler:
             globals.MOUSE_ATTRACTION = not globals.MOUSE_ATTRACTION
             if globals.MOUSE_ATTRACTION: globals.MOUSE_FEAR = False
             print(f"P: MOUSE_ATTRACTION {'ativado' if globals.MOUSE_ATTRACTION else 'desativado'}.")
+
