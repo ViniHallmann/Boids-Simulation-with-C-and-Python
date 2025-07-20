@@ -6,9 +6,9 @@ from c_definitions.c_structures import SpawnMode
 TURN_FACTOR:        float = 0.2
 VISUAL_RANGE:       float = 45.0
 PROTECTED_RANGE:    float = 6.0
-CENTERING_FACTOR:   float = 0.0005
-AVOID_FACTOR:       float = 0.1
-MATCHING_FACTOR:    float = 0.05
+CENTERING_FACTOR:   float = 0.0005 # Coesao
+AVOID_FACTOR:       float = 0.1 # Separação
+MATCHING_FACTOR:    float = 0.0 # Alinhamento
 MAX_SPEED:          float = 6.0
 MIN_SPEED:          float = 3.0
 MARGIN:             int   = 150
