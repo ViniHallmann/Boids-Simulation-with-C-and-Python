@@ -192,6 +192,12 @@ class UI:
                 
                 # Handle boids slider
                 self.boids_slider.handle_event(adjusted_event)
+                
+                # Check if boids slider value changed significantly (debounce)
+                current_time = time.time()
+                if (abs(int(self.boids_slider.val) - globals.NUM_BIRDS) >= 10 and 
+                    current_time - self.boids_slider_last_update > 0.5):  # 500ms debounce
+                    self.boids_slider_last_update = current_time
                     
                 # Handle toggles with adjusted coordinates
                 for toggle in self.toggles:
