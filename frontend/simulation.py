@@ -28,7 +28,7 @@ class Simulation:
         Só atualiza se não estiver pausada.
         """
         if not globals.PAUSED:
-            state.boids_lib.update_boids(self.boids, self.grid, *self.update_args, *globals.MOUSE_POS, globals.MOUSE_MOTION, globals.MOUSE_FEAR, globals.MOUSE_ATTRACTION, globals.MOUSE_FEAR_RADIUS, globals.MOUSE_ATTRACTION_RADIUS)
+            state.boids_lib.update_boids(self.boids, self.grid, *self.update_args, *globals.MOUSE_POS, globals.MOUSE_MOTION, globals.MOUSE_FEAR, globals.MOUSE_ATTRACTION, globals.MOUSE_FEAR_RADIUS, globals.MOUSE_ATTRACTION_RADIUS, globals.INFINITE_SCREEN)
 
     def cleanup(self):
         """
