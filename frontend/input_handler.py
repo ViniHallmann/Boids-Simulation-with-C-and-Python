@@ -43,6 +43,10 @@ class InputHandler:
         """
         if event.key == pygame.K_q:
             self.app.running = False
+            print("P: Aplicação encerrada com Q.")
+        elif event.key == pygame.K_ESCAPE:
+            self.app.running = False
+            print("P: Aplicação encerrada com ESC.")
         elif event.key == pygame.K_b:
             globals.BLUR = not globals.BLUR
             print(f"P: Blur {'ativado' if globals.BLUR else 'desativado'}.")
@@ -63,6 +67,9 @@ class InputHandler:
             globals.DRAW_PROTECTED_RANGE = False
             globals.DRAW_VISUAL_RANGE = False
             print("P: Modo debug desativado.")
+        elif event.key == pygame.K_h: # HIDE UI
+            pass
+        
 
     def _mouse_motion(self, event):
         """
