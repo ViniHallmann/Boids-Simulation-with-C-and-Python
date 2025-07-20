@@ -1,7 +1,8 @@
 import pygame
 import globals
-from simulation import Simulation
-from renderer import Renderer
+from simulation     import Simulation
+from renderer       import Renderer
+from input_handler  import InputHandler
 
 class App:
     def __init__(self):
@@ -11,25 +12,16 @@ class App:
         self.simulation = Simulation()
         self.clock = pygame.time.Clock()
         self.renderer = Renderer(self.clock)
-        
+        self.input_handler = InputHandler(self)
+        self._setup_event_handlers()
         self.running = True
-
-    def _handle_events(self):
-        """
-        Trata os eventos de entrada.
-        """
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_q):
-                self.running = False
-            elif event.type == pygame.MOUSEMOTION:
-                globals.MOUSE_POS = pygame.mouse.get_pos()
             
     def run(self):
         """
         Executa o loop principal da aplicação.
         """
         while self.running:
-            self._handle_events()
+            self.input_handler.process_events()
             self.simulation.update()
             self.renderer.draw(self.simulation)
             self.clock.tick(globals.FPS)
