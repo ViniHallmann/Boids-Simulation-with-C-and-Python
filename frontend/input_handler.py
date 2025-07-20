@@ -68,7 +68,8 @@ class InputHandler:
             globals.DRAW_VISUAL_RANGE = False
             print("P: Modo debug desativado.")
         elif event.key == pygame.K_h: # HIDE UI
-            pass
+            globals.SHOW_UI_PANEL = not globals.SHOW_UI_PANEL
+            print(f"P: Painel da UI {'visível' if globals.SHOW_UI_PANEL else 'oculto'}.")
         
 
     def _mouse_motion(self, event):

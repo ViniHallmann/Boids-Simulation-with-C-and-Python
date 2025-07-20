@@ -31,6 +31,7 @@ DRAW_PROTECTED_RANGE: bool = False
 DRAW_VISUAL_RANGE: bool = False
 MARGIN_WIDTH: int = 2
 MARGIN_DASH_LENGTH: int = 10
+SHOW_UI_PANEL = False
 
 # VARIAVEIS CRITICAS - So podem ser alteradas em tempo de execucao caso o "run" do programa seja reiniciado. 
 # Pra rodar em tempo de execucao vai precisar dar um cleanup e instanciar nova simulation()
