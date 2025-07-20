@@ -25,8 +25,10 @@ class Simulation:
     def update(self):
         """
         Chama a função de atualização da biblioteca C para avançar a simulação.
+        Só atualiza se não estiver pausada.
         """
-        state.boids_lib.update_boids(self.boids, self.grid, *self.update_args, *globals.MOUSE_POS, globals.MOUSE_MOTION, globals.MOUSE_FEAR, globals.MOUSE_ATTRACTION, globals.MOUSE_FEAR_RADIUS, globals.MOUSE_ATTRACTION_RADIUS)
+        if not globals.PAUSED:
+            state.boids_lib.update_boids(self.boids, self.grid, *self.update_args, *globals.MOUSE_POS, globals.MOUSE_MOTION, globals.MOUSE_FEAR, globals.MOUSE_ATTRACTION, globals.MOUSE_FEAR_RADIUS, globals.MOUSE_ATTRACTION_RADIUS)
 
     def cleanup(self):
         """

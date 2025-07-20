@@ -3,10 +3,18 @@ from c_definitions.c_structures import SpawnMode
 
 # VARIAVEIS NAO CRITICAS - Podem ser alteradas em tempo de execucao sem reiniciar o programa.
 # Implementar uma interface para alterar essas variaveis em tempo de execucao.
+"""
+Centering factor 
+Avoid factor
+Matching factor
+Max speed
+Min speed
+Bird size
+"""
 TURN_FACTOR:        float = 0.2
-VISUAL_RANGE:       float = 75.0
-PROTECTED_RANGE:    float = 35.0
-CENTERING_FACTOR:   float = 0.0005
+VISUAL_RANGE:       float = 100.0
+PROTECTED_RANGE:    float = 6.0
+CENTERING_FACTOR:   float = 0.0005 # Coesao
 AVOID_FACTOR:       float = 0.1
 MATCHING_FACTOR:    float = 0.05
 MAX_SPEED:          float = 6.0
@@ -17,7 +25,7 @@ BIRD_WIDTH:         int   = 1
 BIRD_RADIUS:        float = 2.5
 BIRD_COLOR:         tuple = (255, 255, 255)
 BACKGROUND_COLOR:   tuple = (10, 20, 40)
-FPS: int = 60
+FPS: int = 120
 BLUR: bool = False
 BLUR_TRANSPARENCY_VALUE: int = 15
 BIRD_SIZE: int = 3
@@ -31,15 +39,18 @@ DRAW_PROTECTED_RANGE: bool = False
 DRAW_VISUAL_RANGE: bool = False
 MARGIN_WIDTH: int = 2
 MARGIN_DASH_LENGTH: int = 10
-SHOW_UI_PANEL = False
+SHOW_UI_PANEL = True
+PAUSED = False  # Controls simulation pause state
+RESTART_SIMULATION = False  # Flag to request simulation restart
+RESTART_SIMULATION_WITH_BOIDS = None  # Flag to restart with specific number of boids
 
 # VARIAVEIS CRITICAS - So podem ser alteradas em tempo de execucao caso o "run" do programa seja reiniciado. 
 # Pra rodar em tempo de execucao vai precisar dar um cleanup e instanciar nova simulation()
-SCREEN_WIDTH:           int = 900
-SCREEN_HEIGHT:          int = 650
+SCREEN_WIDTH:           int = 1920
+SCREEN_HEIGHT:          int = 1080
 SCREEN_WIDTH_MARGIN:    int = 200
 SCREEN_HEIGHT_MARGIN:   int = 100
-NUM_BIRDS:              int = 100
+NUM_BIRDS:              int = 1000
 PLATFORM_SYSTEM: str = platform.system()
 SUPPORTED_PLATFORMS = ["Windows", "Darwin", "Linux"]
 LIBRARY_EXTENSIONS = {

@@ -16,9 +16,14 @@ class InputHandler:
         Este método será chamado a cada quadro pelo loop principal da App.
         """
         for event in pygame.event.get():
-            handler = self.event_handlers.get(event.type)
-            if handler:
-                handler(event)
+            # First, let the UI handle the event
+            ui_handled = self.app.renderer.UI.handle_event(event)
+            
+            # If UI didn't handle it, use our handlers
+            if not ui_handled:
+                handler = self.event_handlers.get(event.type)
+                if handler:
+                    handler(event)
 
     def _setup_event_handlers(self):
         """
@@ -70,6 +75,9 @@ class InputHandler:
         elif event.key == pygame.K_h: # HIDE UI
             globals.SHOW_UI_PANEL = not globals.SHOW_UI_PANEL
             print(f"P: Painel da UI {'visível' if globals.SHOW_UI_PANEL else 'oculto'}.")
+        elif event.key == pygame.K_SPACE: # PAUSE/PLAY
+            globals.PAUSED = not globals.PAUSED
+            print(f"P: Simulação {'pausada' if globals.PAUSED else 'retomada'}.")
         
 
     def _mouse_motion(self, event):
