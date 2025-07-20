@@ -27,6 +27,10 @@ MOUSE_FEAR: bool = False
 MOUSE_ATTRACTION: bool = False 
 MOUSE_FEAR_RADIUS: int = 100
 MOUSE_ATTRACTION_RADIUS: int = 200
+DRAW_PROTECTED_RANGE: bool = False
+DRAW_VISUAL_RANGE: bool = False
+MARGIN_WIDTH: int = 2
+MARGIN_DASH_LENGTH: int = 10
 
 # VARIAVEIS CRITICAS - So podem ser alteradas em tempo de execucao caso o "run" do programa seja reiniciado. 
 # Pra rodar em tempo de execucao vai precisar dar um cleanup e instanciar nova simulation()
