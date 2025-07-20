@@ -13,7 +13,6 @@ class App:
         self.clock = pygame.time.Clock()
         self.renderer = Renderer(self.clock)
         self.input_handler = InputHandler(self)
-        self._setup_event_handlers()
         self.running = True
             
     def run(self):
