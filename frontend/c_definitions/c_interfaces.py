@@ -41,7 +41,7 @@ def _set_function_signatures():
         ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float,
         ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,
         ctypes.c_bool, ctypes.c_bool, ctypes.c_bool,
-        ctypes.c_int, ctypes.c_int
+        ctypes.c_int, ctypes.c_int, ctypes.c_bool
     ]
     lib.update_boids.restype = None
 
