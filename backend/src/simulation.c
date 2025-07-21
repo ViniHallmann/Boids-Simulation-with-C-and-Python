@@ -135,7 +135,7 @@ static void enforce_movement(Entity* boid){
     boid->position.y += boid->velocity.vy;
 }
 
-void update_boids(Boids* boids, Grid *grid, 
+void update_boids(Boids* boids, Grid *grid, BoundaryBehavior behavior,
     float visual_range, float protected_range,
     float centering_factor, float matching_factor, float avoid_factor,
     float turn_factor, float bounce_factor,

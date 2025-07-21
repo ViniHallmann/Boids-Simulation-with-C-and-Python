@@ -1,4 +1,4 @@
-CC = gcc
+CC = gcc-15
 CFLAGS = -O3 -Ibackend/include -fPIC -fopenmp -g -Wall
 
 
