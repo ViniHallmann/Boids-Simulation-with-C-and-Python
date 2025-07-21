@@ -112,11 +112,8 @@ class Renderer:
         if globals.MARGIN_LINE:
             self.draw_margins(globals.MARGIN_WIDTH, globals.MARGIN_DASH_LENGTH)
 
-        # AQUI FAZER O SEGUINTE: UI.py cria um painel de UI que desenha o FPS e outros elementos. 
-        # Ai depois disso UI.py deve ter seu proprio Draw()
-        # que chama o draw_fps() e outros draws que forem necessários ai excluir daqui essa chamda
         self.UI.draw()
-        ####################################
+
         pygame.display.flip()
 
     def cleanup(self):
