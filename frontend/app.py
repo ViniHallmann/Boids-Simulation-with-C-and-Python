@@ -9,11 +9,11 @@ class App:
         """
         Inicializa os componentes principais da aplicação.
         """
-        self.simulation = Simulation()
-        self.clock = pygame.time.Clock()
-        self.renderer = Renderer(self.clock)
-        self.input_handler = InputHandler(self)
-        self.running = True
+        self.simulation     = Simulation(globals.NUM_BIRDS)
+        self.clock          = pygame.time.Clock()
+        self.renderer       = Renderer(self.clock)
+        self.input_handler  = InputHandler(self)
+        self.running        = True
             
     def run(self):
         """
@@ -21,15 +21,6 @@ class App:
         """
         while self.running:
             self.input_handler.process_events()
-            
-            # Check for restart requests
-            if globals.RESTART_SIMULATION:
-                self.restart_simulation()
-                globals.RESTART_SIMULATION = False
-            elif globals.RESTART_SIMULATION_WITH_BOIDS is not None:
-                self.restart_simulation(globals.RESTART_SIMULATION_WITH_BOIDS)
-                globals.RESTART_SIMULATION_WITH_BOIDS = None
-            
             self.simulation.update()
             self.renderer.draw(self.simulation)
             self.clock.tick(globals.FPS)
@@ -43,18 +34,14 @@ class App:
         self.simulation.cleanup()
         self.renderer.cleanup()
 
-    def restart_simulation(self, new_num_birds=None):
+    def restart_simulation(self, num_boids=None):
         """
-        Reinicia a simulação com um novo número de boids, se especificado.
+        Responsabilidade ÚNICA: Limpa a simulação antiga e cria uma nova.
+        Se num_boids não for especificado, usa o valor atual de globals.
         """
-        if new_num_birds is not None:
-            globals.NUM_BIRDS = new_num_birds
-            print(f"P: Reiniciando simulação com {new_num_birds} boids...")
-        else:
-            print("P: Reiniciando simulação...")
+        if num_boids is not None:
+            globals.NUM_BIRDS = num_boids
+        print(f"P: Reiniciando simulação com {globals.NUM_BIRDS} boids...")
         
-        # Limpa a simulação atual
         self.simulation.cleanup()
-        
-        # Cria uma nova simulação
-        self.simulation = Simulation()
+        self.simulation = Simulation(globals.NUM_BIRDS)
