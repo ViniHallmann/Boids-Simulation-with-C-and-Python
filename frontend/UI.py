@@ -9,6 +9,18 @@ import time
 # UI.PY GERA COMPONENTES DE SLIDERS, BOTOES, ..., GERERICOS BASEADO NO QUE FOR PEDIDO -> botao(nome,cor,funcao,...)
 # ADICIONA OS SLIDERS NO PAINEL
 # PASSA O PAINEL PRO RENDERER
+# DICAS DE OTMIZACAO:
+
+# Cache de Superfícies da UI(gemini q falou):
+#   Textos Estáticos: Rótulos de sliders e botões que nunca mudam devem ser renderizados com font.render() apenas uma vez e armazenados.
+
+#   Textos Dinâmicos (Otimização): Você já fez isso para o contador de FPS! O texto só é renderizado novamente quando o valor muda. 
+#   Vamos garantir que todos os textos dinâmicos sigam essa regra.
+
+#   Painéis Compostos: O painel da UI, com seu fundo e títulos, deve ser desenhado em uma única superfície (panel_surface) na inicialização. 
+# O loop principal apenas "blita" essa superfície inteira.
+
+#COMPONENTE
 class Slider:
     def __init__(self, x, y, width, height, min_val, max_val, initial_val, label, step=None):
         self.rect = pygame.Rect(x, y, width, height)
@@ -45,6 +57,7 @@ class Slider:
         label_text = font.render(f"{self.label}: {self.val:.3f}" if self.step is None else f"{self.label}: {int(self.val)}", True, (255, 255, 255))
         screen.blit(label_text, (self.rect.x, self.rect.y - 18))
 
+#COMPONENTE
 class ToggleButton:
     def __init__(self, x, y, width, height, label, initial_state=False):
         self.rect = pygame.Rect(x, y, width, height)
@@ -67,6 +80,7 @@ class ToggleButton:
         text_rect = text.get_rect(center=self.rect.center)
         screen.blit(text, text_rect)
 
+#COMPONENTE
 class Button:
     def __init__(self, x, y, width, height, label, color=(70, 70, 70)):
         self.rect = pygame.Rect(x, y, width, height)
@@ -123,7 +137,7 @@ class UI:
         # Boid Movement sliders
         self.sliders = [
             Slider(start_x, current_y, slider_width, slider_height, 0.0, 1.0, globals.TURN_FACTOR, "turn factor"),
-            Slider(start_x, current_y + spacing, slider_width, slider_height, 10.0, 200.0, globals.VISUAL_RANGE, "boid vision"), # certo 
+            Slider(start_x, current_y + spacing, slider_width, slider_height, 10.0, 200.0, globals.VISUAL_RANGE, "visual range"), # certo 
             Slider(start_x, current_y + spacing*2, slider_width, slider_height, 5.0, 100.0, globals.PROTECTED_RANGE, "protected range"), # certo 
             Slider(start_x, current_y + spacing*3, slider_width, slider_height, 0.0, 2.0, globals.CENTERING_FACTOR*1000, "centering factor", 0.1), # rever vine 
             Slider(start_x, current_y + spacing*4, slider_width, slider_height, 0.0, 3.0, globals.AVOID_FACTOR*10, "avoid factor", 0.1), # separacao 
@@ -136,11 +150,11 @@ class UI:
         toggle_y = current_y + spacing * 8 + 20  # Adjusted for 8 sliders
         self.toggles = [
             ToggleButton(20, toggle_y, 120, 25, "hide menu toggle", False),
-            ToggleButton(150, toggle_y, 120, 25, "show boid desired dir", globals.DRAW_PROTECTED_RANGE),
+            ToggleButton(150, toggle_y, 120, 25, "protected range", globals.DRAW_PROTECTED_RANGE), # PROTECTED E VISUAL RANGE DEVEM SER BOTOES QUE FICAM UM DO LADO DO OUTRO. ELES NAO ESTAO
+            ToggleButton(20, toggle_y + 60, 120, 25, "visual range", globals.DRAW_VISUAL_RANGE),
             ToggleButton(20, toggle_y + 30, 120, 25, "complete hide boids", False),
             ToggleButton(150, toggle_y + 30, 120, 25, "change hues to show speed", False),
-            ToggleButton(20, toggle_y + 60, 120, 25, "show vision areas", globals.DRAW_VISUAL_RANGE),
-            ToggleButton(150, toggle_y + 60, 120, 25, "show vision outlines", globals.MARGIN_LINE),
+            ToggleButton(150, toggle_y + 60, 120, 25, "margin", globals.MARGIN_LINE),
             ToggleButton(20, toggle_y + 90, 120, 25, "show debug info", False),
         ]
         
@@ -168,7 +182,7 @@ class UI:
         ]
         
         # Pause button - positioned separately for easier access
-        self.pause_button = Button(20, 110, 100, 25, "❚❚  pause", (70, 70, 70))
+        self.pause_button = Button(20, 110, 100, 25, "pause", (70, 70, 70))
         
         # Debounce timer for boids slider
         self.boids_slider_last_update = 0
@@ -243,13 +257,17 @@ class UI:
             globals.MIN_SPEED = self.sliders[6].val  # Updated index
             globals.MAX_SPEED = self.sliders[7].val  # Updated index
 
+
+    # ELE ATUALIZA AS VARAIVEIS GLOBAIS BASEADA NA LABEL DO TOGGLE
+    # NAO GOSTO DISSO POIS AO MUDAR O NOME DA LABEL O CODIGO QUEBRA,
+    # PENSAR EM OUTRA MANEIRA DE ATUALIZAR AS VARIAVEIS GLOBAIS COM A ACAO DO TOGGLE
     def update_toggle_globals(self, toggle):
         """Update global variables from toggle states"""
-        if toggle.label == "show boid desired dir":
+        if toggle.label == "protected range":
             globals.DRAW_PROTECTED_RANGE = toggle.state
-        elif toggle.label == "show vision areas":
+        elif toggle.label == "visual range":
             globals.DRAW_VISUAL_RANGE = toggle.state
-        elif toggle.label == "show vision outlines":
+        elif toggle.label == "margin":
             globals.MARGIN_LINE = toggle.state
 
     def handle_button_action(self, action):
