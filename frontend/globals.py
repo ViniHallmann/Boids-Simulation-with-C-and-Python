@@ -1,5 +1,6 @@
 import platform
 from c_definitions.c_structures import SpawnMode
+from c_definitions.c_structures import BoundaryBehavior
 
 # VARIAVEIS NAO CRITICAS - Podem ser alteradas em tempo de execucao sem reiniciar o programa.
 # Implementar uma interface para alterar essas variaveis em tempo de execucao.
@@ -16,7 +17,9 @@ AVOID_FACTOR:       float = 0.1
 # ALINHAMENTO
 MATCHING_FACTOR:    float = 0.05
 
-INFINITE_SCREEN:     bool = False
+# BOUNCE_FACTOR:     float = 0.1
+BOUNCE_FACTOR:      float = 0.1
+BOUNDARY_BEHAVIOR: BoundaryBehavior = BoundaryBehavior.BOUNDARY_BOUNCE
 
 MAX_SPEED:          float = 6.0
 MIN_SPEED:          float = 3.0
