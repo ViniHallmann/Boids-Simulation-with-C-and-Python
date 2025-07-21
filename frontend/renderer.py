@@ -11,9 +11,15 @@ class Renderer:
         self.screen = pygame.display.set_mode((globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT))
         self.blur_surface = pygame.Surface((globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT), pygame.SRCALPHA)
         self.blur_surface.fill((0, 0, 0, globals.BLUR_TRANSPARENCY_VALUE))
+        
         self.bird_size = globals.BIRD_SIZE
-        self.model_triangle = [ (self.bird_size * 0.75, 0), (self.bird_size * -0.5, self.bird_size * -0.5), (self.bird_size * -0.5, self.bird_size * 0.5)]
+        self.model_triangle = [ 
+            (self.bird_size * 0.75, 0), 
+            (self.bird_size * -0.5, self.bird_size * -0.5), 
+            (self.bird_size * -0.5, self.bird_size * 0.5)]
+        
         self.UI = UI(self.screen, clock)
+
         pygame.display.set_caption("P: Simulação de Boids (C + Python)")
         print("P: Renderer inicializado.")
 
@@ -49,14 +55,10 @@ class Renderer:
         for mx, my in self.model_triangle:
             rx = (mx * cos_a) - (my * sin_a)
             ry = (mx * sin_a) + (my * cos_a)
-
-            screen_x = rx + entity.position.x
-            screen_y = ry + entity.position.y
-
-            rotated_points.append((screen_x, screen_y))
+            rotated_points.append((rx + entity.position.x, ry + entity.position.y))
 
         pygame.draw.polygon(self.screen, globals.BIRD_COLOR, rotated_points, 1)
-    
+
     def draw_background(self):
         """
         Desenha o fundo da tela.
@@ -70,21 +72,24 @@ class Renderer:
         """
         Desenha os raios de proteção e visualização dos boids.
         """
-        if globals.DRAW_PROTECTED_RANGE or globals.DRAW_VISUAL_RANGE:
-            for i in range(globals.NUM_BIRDS):
-                entity = simulation.boids.contents.entities[i]
-                pos = (int(entity.position.x), int(entity.position.y))
+        if not (globals.DRAW_PROTECTED_RANGE or globals.DRAW_VISUAL_RANGE): return
 
-                if globals.DRAW_PROTECTED_RANGE:
-                    pygame.draw.circle(self.screen, (255, 0, 0), pos, int(globals.PROTECTED_RANGE), 1)
-                
-                if globals.DRAW_VISUAL_RANGE:
-                    pygame.draw.circle(self.screen, (0, 255, 0), pos, int(globals.VISUAL_RANGE), 1)
+        for i in range(globals.NUM_BIRDS):
+            entity = simulation.boids.contents.entities[i]
+            pos = (int(entity.position.x), int(entity.position.y))
+
+            if globals.DRAW_PROTECTED_RANGE:
+                pygame.draw.circle(self.screen, (255, 0, 0), pos, int(globals.PROTECTED_RANGE), 1)
+            
+            if globals.DRAW_VISUAL_RANGE:
+                pygame.draw.circle(self.screen, (0, 255, 0), pos, int(globals.VISUAL_RANGE), 1)
     
     def draw_margins(self, width=2, dash_length=10):
         """
         Desenha as margens da tela.
         """
+        if not globals.MARGIN_LINE: return
+        
         margin_color = (100, 100, 100)
         margin_rect = pygame.Rect(
             globals.MARGIN,
@@ -100,17 +105,17 @@ class Renderer:
         """
         Desenha tela composta por boids, margens e UI.
         """
+        entities            = simulation.boids.contents.entities
+        draw_boid_func      = self.draw_boid
 
         self.draw_background()
 
         for i in range(globals.NUM_BIRDS):
-            entity = simulation.boids.contents.entities[i]
-            self.draw_boid(entity)
+            draw_boid_func(entities[i])
         
         self.draw_boids_range(simulation)
-            
-        if globals.MARGIN_LINE:
-            self.draw_margins(globals.MARGIN_WIDTH, globals.MARGIN_DASH_LENGTH)
+
+        self.draw_margins(globals.MARGIN_WIDTH, globals.MARGIN_DASH_LENGTH)
 
         self.UI.draw()
 
