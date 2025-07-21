@@ -11,9 +11,15 @@ class Renderer:
         self.screen = pygame.display.set_mode((globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT))
         self.blur_surface = pygame.Surface((globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT), pygame.SRCALPHA)
         self.blur_surface.fill((0, 0, 0, globals.BLUR_TRANSPARENCY_VALUE))
+        
         self.bird_size = globals.BIRD_SIZE
-        self.model_triangle = [ (self.bird_size * 0.75, 0), (self.bird_size * -0.5, self.bird_size * -0.5), (self.bird_size * -0.5, self.bird_size * 0.5)]
+        self.model_triangle = [ 
+            (self.bird_size * 0.75, 0), 
+            (self.bird_size * -0.5, self.bird_size * -0.5), 
+            (self.bird_size * -0.5, self.bird_size * 0.5)]
+        
         self.UI = UI(self.screen, clock)
+
         pygame.display.set_caption("P: Simulação de Boids (C + Python)")
         print("P: Renderer inicializado.")
 
@@ -31,52 +37,88 @@ class Renderer:
             pygame.draw.line(surface, color, (x, i), (x, i + dash_length), width)
             pygame.draw.line(surface, color, (x + w, i), (x + w, i + dash_length), width)
 
-    def draw(self, simulation):
+    def draw_boid(self, entity):
         """
-        Desenha todos os boids na tela.
+        Desenha um boid na tela.
         """
+        vx, vy = entity.velocity.vx, entity.velocity.vy
+        speed = math.sqrt(vx*vx + vy*vy)
 
-        #self.screen.blit(self.background_image, (0, 0))
+        if speed == 0:
+            cos_a = 1.0
+            sin_a = 0.0
+        else:
+            cos_a = vx / speed
+            sin_a = vy / speed
 
+        rotated_points = []
+        for mx, my in self.model_triangle:
+            rx = (mx * cos_a) - (my * sin_a)
+            ry = (mx * sin_a) + (my * cos_a)
+            rotated_points.append((rx + entity.position.x, ry + entity.position.y))
+
+        pygame.draw.polygon(self.screen, globals.BIRD_COLOR, rotated_points, 1)
+
+    def draw_background(self):
+        """
+        Desenha o fundo da tela.
+        """
         if globals.BLUR:
             self.screen.blit(self.blur_surface, (0, 0))
         else:
             self.screen.fill(globals.BACKGROUND_COLOR)
+        
+    def draw_boids_range(self, simulation):
+        """
+        Desenha os raios de proteção e visualização dos boids.
+        """
+        if not (globals.DRAW_PROTECTED_RANGE or globals.DRAW_VISUAL_RANGE): return
 
         for i in range(globals.NUM_BIRDS):
             entity = simulation.boids.contents.entities[i]
-            angle = math.atan2(entity.velocity.vy, entity.velocity.vx)
-            rotated_points = []
-            for mx, my in self.model_triangle:
-                
-                rx = (mx * math.cos(angle)) - (my * math.sin(angle))
-                ry = (mx * math.sin(angle)) + (my * math.cos(angle))
+            pos = (int(entity.position.x), int(entity.position.y))
 
-                screen_x = rx + entity.position.x
-                screen_y = ry + entity.position.y
-
-                rotated_points.append((screen_x, screen_y))
-
-            pygame.draw.polygon(self.screen, globals.BIRD_COLOR, rotated_points, 1)
-
-            # ANTES ERA FEITO ASSIM PRA DESENHAR OS BOIDS
-            # pos = (int(entity.position.x), int(entity.position.y))
-            # pygame.draw.circle(self.screen, globals.BIRD_COLOR, pos, globals.BIRD_RADIUS, globals.BIRD_WIDTH)
-
-        if globals.MARGIN_LINE:
-            margin_color = (100, 100, 100)
-            margin_rect = pygame.Rect(
-                globals.MARGIN,
-                globals.MARGIN,
-                globals.SCREEN_WIDTH - 2 * globals.MARGIN,
-                globals.SCREEN_HEIGHT - 2 * globals.MARGIN
-            )
-
-            # DESENHO DA MARGEM RETA
+            if globals.DRAW_PROTECTED_RANGE:
+                pygame.draw.circle(self.screen, (255, 0, 0), pos, int(globals.PROTECTED_RANGE), 1)
+            
+            if globals.DRAW_VISUAL_RANGE:
+                pygame.draw.circle(self.screen, (0, 255, 0), pos, int(globals.VISUAL_RANGE), 1)
+    
+    def draw_margins(self, width=2, dash_length=10):
+        """
+        Desenha as margens da tela.
+        """
+        if not globals.MARGIN_LINE: return
+        
+        margin_color = (100, 100, 100)
+        margin_rect = pygame.Rect(
+            globals.MARGIN,
+            globals.MARGIN,
+            globals.SCREEN_WIDTH - 2 * globals.MARGIN,
+            globals.SCREEN_HEIGHT - 2 * globals.MARGIN
+        )
+        # DESENHO DA MARGEM RETA
             #pygame.draw.rect(self.screen, margin_color, margin_rect, 2)
-            self._draw_dashed_rect(self.screen, margin_color, margin_rect, width=2, dash_length=10)
+        self._draw_dashed_rect(self.screen, margin_color, margin_rect, width, dash_length)
 
-        self.UI.draw_fps()
+    def draw(self, simulation):
+        """
+        Desenha tela composta por boids, margens e UI.
+        """
+        entities            = simulation.boids.contents.entities
+        draw_boid_func      = self.draw_boid
+
+        self.draw_background()
+
+        for i in range(globals.NUM_BIRDS):
+            draw_boid_func(entities[i])
+        
+        self.draw_boids_range(simulation)
+
+        self.draw_margins(globals.MARGIN_WIDTH, globals.MARGIN_DASH_LENGTH)
+
+        self.UI.draw()
+
         pygame.display.flip()
 
     def cleanup(self):

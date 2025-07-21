@@ -97,6 +97,35 @@ static void enforce_screen_boundaries(Entity* boid, float turn_factor, int width
     if (boid->position.y > height - margin) boid->velocity.vy -= turn_factor;
 }
 
+static void enforce_infinite_screen(Entity* boid, int width, int height) {
+    if (boid->position.x < 0) boid->position.x += width;
+    else if (boid->position.x >= width) boid->position.x -= width;
+
+    if (boid->position.y < 0) boid->position.y += height;
+    else if (boid->position.y >= height) boid->position.y -= height;
+}
+
+static void enforce_bounce_screen(Entity* boid, float bounce_factor, int width, int height) {
+    if (boid->position.x > width) {
+        boid->position.x = width; 
+        boid->velocity.vx *= -bounce_factor; 
+    }
+    else if (boid->position.x < 0) {
+        boid->position.x = 0;
+        boid->velocity.vx *= -bounce_factor;
+    }
+
+    if (boid->position.y > height) {
+        boid->position.y = height; 
+        boid->velocity.vy *= -bounce_factor; 
+    }
+
+    else if (boid->position.y < 0) {
+        boid->position.y = 0;
+        boid->velocity.vy *= -bounce_factor;
+    }
+}
+
 static void enforce_mouse_events(Entity* boid, int mouse_x, int mouse_y, bool mouse_fear, bool mouse_attraction, int mouse_fear_radius, int mouse_attraction_radius){
     mouse_fear ? apply_mouse_events(boid, mouse_x, mouse_y, mouse_fear_radius, -1.0f) : apply_mouse_events(boid, mouse_x, mouse_y, mouse_attraction_radius, 1.0f);
 }
@@ -109,9 +138,12 @@ static void enforce_movement(Entity* boid){
 void update_boids(Boids* boids, Grid *grid, 
     float visual_range, float protected_range,
     float centering_factor, float matching_factor, float avoid_factor,
-    float turn_factor, float max_speed, float min_speed,
-    int screen_width, int screen_height, int margin, int mouse_x, int mouse_y, bool mouse_motion,
-    bool mouse_fear, bool mouse_attraction, int mouse_fear_radius, int mouse_attraction_radius){
+    float turn_factor, float bounce_factor,
+    float max_speed, float min_speed,
+    int screen_width, int screen_height, int margin,
+    int mouse_x, int mouse_y, bool mouse_motion,
+    bool mouse_fear, bool mouse_attraction,
+    int mouse_fear_radius, int mouse_attraction_radius){
     if (!boids || boids->count == 0) return;
 
     Velocity* new_velocities = (Velocity*) malloc(boids->count * sizeof(Velocity));
@@ -131,7 +163,6 @@ void update_boids(Boids* boids, Grid *grid,
     for (int i = 0; i < boids->count; i++) {
         Entity* boid = &boids->entities[i];
         boid->velocity = new_velocities[i];
-        
         enforce_screen_boundaries(boid, turn_factor, screen_width, screen_height, margin);
         if (mouse_motion)
             enforce_mouse_events(boid, mouse_x, mouse_y, mouse_fear, mouse_attraction, mouse_fear_radius, mouse_attraction_radius);

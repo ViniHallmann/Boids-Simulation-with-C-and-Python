@@ -3,7 +3,7 @@ import os
 import sys
 import globals
 import state
-from .c_structures import Boids, Grid
+from .c_structures import Boids, Grid, SpawnMode, BoundaryBehavior
 
 def _configure_and_validate_path():
     """
@@ -36,12 +36,28 @@ def _set_function_signatures():
     lib.free_grid.restype = None
 
     lib.update_boids.argtypes = [
-        ctypes.POINTER(Boids), ctypes.POINTER(Grid),
-        ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, # visual_range, protected_range, centering_factor, matching_factor, avoid_factor
-        ctypes.c_float, ctypes.c_float, ctypes.c_float, ctypes.c_float, # turn_factor, max_speed, min_speed
-        ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int, # screen_width, screen_height, margin
-        ctypes.c_bool, ctypes.c_bool, ctypes.c_bool, # mouse_motion, mouse_fear, mouse_attraction
-        ctypes.c_int, ctypes.c_int # mouse_fear_radius, mouse_attraction_radius
+        ctypes.POINTER(Boids),    # boids
+        ctypes.POINTER(Grid),     # grid
+        ctypes.c_int,             # behavior 
+        ctypes.c_float,           # visual_range
+        ctypes.c_float,           # protected_range
+        ctypes.c_float,           # centering_factor
+        ctypes.c_float,           # matching_factor
+        ctypes.c_float,           # avoid_factor
+        ctypes.c_float,           # turn_factor
+        ctypes.c_float,           # bounce_factor
+        ctypes.c_float,           # max_speed
+        ctypes.c_float,           # min_speed
+        ctypes.c_int,             # screen_width
+        ctypes.c_int,             # screen_height
+        ctypes.c_int,             # margin
+        ctypes.c_int,             # mouse_x
+        ctypes.c_int,             # mouse_y
+        ctypes.c_bool,            # mouse_motion
+        ctypes.c_bool,            # mouse_fear
+        ctypes.c_bool,            # mouse_attraction
+        ctypes.c_int,             # mouse_fear_radius
+        ctypes.c_int,             # mouse_attraction_radius
     ]
     lib.update_boids.restype = None
 
