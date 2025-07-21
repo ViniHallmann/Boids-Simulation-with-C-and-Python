@@ -16,10 +16,9 @@ class InputHandler:
         Este método será chamado a cada quadro pelo loop principal da App.
         """
         for event in pygame.event.get():
-            # First, let the UI handle the event
+            
             ui_handled = self.app.renderer.UI.handle_event(event)
             
-            # If UI didn't handle it, use our handlers
             if not ui_handled:
                 handler = self.event_handlers.get(event.type)
                 if handler:
@@ -34,6 +33,7 @@ class InputHandler:
             pygame.KEYDOWN: self._key_down,
             pygame.MOUSEMOTION: self._mouse_motion,
             pygame.MOUSEBUTTONDOWN: self._mouse_button_down,
+            pygame.USEREVENT: self._user_event_handler
         }
     
     def _quit(self, event):
@@ -109,3 +109,12 @@ class InputHandler:
             if globals.MOUSE_ATTRACTION: globals.MOUSE_FEAR = False
             print(f"P: MOUSE_ATTRACTION {'ativado' if globals.MOUSE_ATTRACTION else 'desativado'}.")
 
+    def _user_event_handler(self, event):
+        """
+        Manipulador para eventos personalizados (USEREVENT).
+        Distribui o evento para o método correto baseado no tipo de ação.
+        """
+        if event.action == "restart_simulation":
+            self.app.restart_simulation(event.num_birds)
+        else:
+            print(f"P: Evento desconhecido: {event.action}")
