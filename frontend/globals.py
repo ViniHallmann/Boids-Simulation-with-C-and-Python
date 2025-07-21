@@ -63,11 +63,11 @@ RESTART_SIMULATION:             bool = False
 
 # VARIAVEIS CRITICAS - So podem ser alteradas em tempo de execucao caso o "run" do programa seja reiniciado. 
 # Pra rodar em tempo de execucao vai precisar dar um cleanup e instanciar nova simulation()
-SCREEN_WIDTH:           int = 1600
-SCREEN_HEIGHT:          int = 900
+SCREEN_WIDTH:           int = 1300
+SCREEN_HEIGHT:          int = 700
 SCREEN_WIDTH_MARGIN:    int = 200
 SCREEN_HEIGHT_MARGIN:   int = 100
-NUM_BIRDS:              int = 100
+NUM_BIRDS:              int = 10000
 PLATFORM_SYSTEM: str = platform.system()
 SUPPORTED_PLATFORMS = ["Windows", "Darwin", "Linux"]
 LIBRARY_EXTENSIONS = {
