@@ -118,12 +118,36 @@ static void enforce_infinite_screen(Entity* boid, int width, int height) {
     else if (boid->position.y >= height) boid->position.y -= height;
 }
 
-void update_boids(Boids* boids, Grid *grid, 
+static void enforce_bounce_screen(Entity* boid, float bounce_factor, int width, int height) {
+    if (boid->position.x > width) {
+        boid->position.x = width; 
+        boid->velocity.vx *= -bounce_factor; 
+    }
+    else if (boid->position.x < 0) {
+        boid->position.x = 0;
+        boid->velocity.vx *= -bounce_factor;
+    }
+
+    if (boid->position.y > height) {
+        boid->position.y = height; 
+        boid->velocity.vy *= -bounce_factor; 
+    }
+
+    else if (boid->position.y < 0) {
+        boid->position.y = 0;
+        boid->velocity.vy *= -bounce_factor;
+    }
+}
+
+void update_boids(Boids* boids, Grid *grid, BoundaryBehavior behavior,
     float visual_range, float protected_range,
     float centering_factor, float matching_factor, float avoid_factor,
-    float turn_factor, float max_speed, float min_speed,
-    int screen_width, int screen_height, int margin, int mouse_x, int mouse_y, bool mouse_motion,
-    bool mouse_fear, bool mouse_attraction, int mouse_fear_radius, int mouse_attraction_radius, bool infinite_screen){
+    float turn_factor, float bounce_factor,
+    float max_speed, float min_speed,
+    int screen_width, int screen_height, int margin,
+    int mouse_x, int mouse_y, bool mouse_motion,
+    bool mouse_fear, bool mouse_attraction,
+    int mouse_fear_radius, int mouse_attraction_radius){
     if (!boids || boids->count == 0) return;
 
     Velocity* new_velocities = (Velocity*) malloc(boids->count * sizeof(Velocity));
@@ -144,7 +168,17 @@ void update_boids(Boids* boids, Grid *grid,
         Entity* boid = &boids->entities[i];
         boid->velocity = new_velocities[i];
 
-        infinite_screen ? enforce_infinite_screen(boid, screen_width, screen_height) : enforce_screen_boundaries(boid, turn_factor, screen_width, screen_height, margin);
+        switch (behavior) {
+            case BOUNDARY_TURN:
+                enforce_screen_boundaries(boid, turn_factor, screen_width, screen_height, margin);
+                break;
+            case BOUNDARY_BOUNCE:
+                enforce_bounce_screen(boid, bounce_factor, screen_width, screen_height);
+                break;
+            case BOUNDARY_WRAP:
+                enforce_infinite_screen(boid, screen_width, screen_height);
+                break;
+        }
         mouse_motion ? enforce_mouse_events(boid, mouse_x, mouse_y, mouse_fear, mouse_attraction, mouse_fear_radius, mouse_attraction_radius) : (void)0;
         enforce_speed_limits(boid, max_speed, min_speed);
 
