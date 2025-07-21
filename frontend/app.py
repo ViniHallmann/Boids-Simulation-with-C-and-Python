@@ -9,12 +9,13 @@ class App:
         """
         Inicializa os componentes principais da aplicação.
         """
+
         self.simulation     = Simulation(globals.NUM_BIRDS)
         self.clock          = pygame.time.Clock()
         self.renderer       = Renderer(self.clock)
         self.input_handler  = InputHandler(self)
         self.running        = True
-            
+
     def run(self):
         """
         Executa o loop principal da aplicação.

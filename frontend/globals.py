@@ -20,7 +20,7 @@ MATCHING_FACTOR:    float = 0.05
 # BOUNCE_FACTOR:     float = 0.1
 BOUNCE_FACTOR:      float = 0.1
 BOUNDARY_BEHAVIOR: BoundaryBehavior = BoundaryBehavior.BOUNDARY_TURN
-
+  
 MAX_SPEED:          float = 6.0
 MIN_SPEED:          float = 3.0
 

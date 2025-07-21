@@ -23,16 +23,16 @@ def _set_function_signatures():
     Define os tipos de argumento e retorno para as funções da lib C.
     """
     lib = state.boids_lib
-    lib.initialize_boids.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int]
-    lib.initialize_boids.restype = ctypes.POINTER(Boids)
+    lib.initialize_boids.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int] # num_boids, screen_width, screen_height, spawn_mode
+    lib.initialize_boids.restype = ctypes.POINTER(Boids) # Boids
 
-    lib.free_boids.argtypes = [ctypes.POINTER(Boids)]
+    lib.free_boids.argtypes = [ctypes.POINTER(Boids)] # Boids
     lib.free_boids.restype = None
 
-    lib.create_grid.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_float]
-    lib.create_grid.restype = ctypes.POINTER(Grid)
+    lib.create_grid.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_float] # screen_width, screen_height, cell_size
+    lib.create_grid.restype = ctypes.POINTER(Grid) # Grid
 
-    lib.free_grid.argtypes = [ctypes.POINTER(Grid)]
+    lib.free_grid.argtypes = [ctypes.POINTER(Grid)] # Grid
     lib.free_grid.restype = None
 
     lib.update_boids.argtypes = [

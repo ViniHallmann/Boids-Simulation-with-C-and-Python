@@ -1,33 +1,20 @@
 #include "simulation.h"
 #include "grid.h" 
+#include <omp.h>
 
-static void enforce_mouse_events(Entity* boid, int mouse_x, int mouse_y, bool mouse_fear, bool mouse_attraction, int mouse_fear_radius, int mouse_attraction_radius){
-    if(mouse_fear){
-        float dx = boid->position.x - mouse_x;
-        float dy = boid->position.y - mouse_y;
-        float distance_sq = dx * dx + dy * dy;
-        if (distance_sq < mouse_fear_radius * mouse_fear_radius) {
-                float distance = sqrtf(distance_sq);
-                float avoid_factor = (mouse_fear_radius - distance) / mouse_fear_radius;
-                if (distance > 0) {
-                    boid->velocity.vx += (dx / distance) * avoid_factor;
-                    boid->velocity.vy += (dy / distance) * avoid_factor;
-                }
-            }
+static void apply_mouse_events(Entity* boid, int mouse_x, int mouse_y, int radius, float force){
+    float dx = boid->position.x - mouse_x;
+    float dy = boid->position.y - mouse_y;
+    float distance_sq = dx * dx + dy * dy;
+    if (distance_sq < radius * radius) {
+        float distance = sqrtf(distance_sq);
+        float avoid_factor = (radius - distance) / radius;
+        if (distance > 0) {
+            // O que faz com que mude de fear ou attraction é o sinal do force ( + ou - ) 
+            boid->velocity.vx += force * (dx / distance) * avoid_factor;
+            boid->velocity.vy += force * (dy / distance) * avoid_factor;
         }
-        else if(mouse_attraction){
-            float dx = mouse_x - boid->position.x;
-            float dy = mouse_y - boid->position.y;
-            float distance_sq = dx * dx + dy * dy;
-            if (distance_sq < mouse_attraction_radius * mouse_attraction_radius) {
-                float distance = sqrtf(distance_sq);
-                float centering_factor = (mouse_attraction_radius - distance) / mouse_attraction_radius;
-                if (distance > 0) {
-                    boid->velocity.vx += (dx / distance) * centering_factor;
-                    boid->velocity.vy += (dy / distance) * centering_factor;
-                }
-            }
-        }
+    }
 }
 
 static void apply_flocking_rules(Boids* boids, Grid* grid, Velocity* new_velocities, float visual_range_sq, float protected_range_sq, float centering_factor, float matching_factor, float avoid_factor) {
@@ -139,7 +126,16 @@ static void enforce_bounce_screen(Entity* boid, float bounce_factor, int width, 
     }
 }
 
-void update_boids(Boids* boids, Grid *grid, BoundaryBehavior behavior,
+static void enforce_mouse_events(Entity* boid, int mouse_x, int mouse_y, bool mouse_fear, bool mouse_attraction, int mouse_fear_radius, int mouse_attraction_radius){
+    mouse_fear ? apply_mouse_events(boid, mouse_x, mouse_y, mouse_fear_radius, -1.0f) : apply_mouse_events(boid, mouse_x, mouse_y, mouse_attraction_radius, 1.0f);
+}
+
+static void enforce_movement(Entity* boid){
+    boid->position.x += boid->velocity.vx;
+    boid->position.y += boid->velocity.vy;
+}
+
+void update_boids(Boids* boids, Grid *grid, 
     float visual_range, float protected_range,
     float centering_factor, float matching_factor, float avoid_factor,
     float turn_factor, float bounce_factor,
@@ -167,23 +163,11 @@ void update_boids(Boids* boids, Grid *grid, BoundaryBehavior behavior,
     for (int i = 0; i < boids->count; i++) {
         Entity* boid = &boids->entities[i];
         boid->velocity = new_velocities[i];
-
-        switch (behavior) {
-            case BOUNDARY_TURN:
-                enforce_screen_boundaries(boid, turn_factor, screen_width, screen_height, margin);
-                break;
-            case BOUNDARY_BOUNCE:
-                enforce_bounce_screen(boid, bounce_factor, screen_width, screen_height);
-                break;
-            case BOUNDARY_WRAP:
-                enforce_infinite_screen(boid, screen_width, screen_height);
-                break;
-        }
-        mouse_motion ? enforce_mouse_events(boid, mouse_x, mouse_y, mouse_fear, mouse_attraction, mouse_fear_radius, mouse_attraction_radius) : (void)0;
+        enforce_screen_boundaries(boid, turn_factor, screen_width, screen_height, margin);
+        if (mouse_motion)
+            enforce_mouse_events(boid, mouse_x, mouse_y, mouse_fear, mouse_attraction, mouse_fear_radius, mouse_attraction_radius);
         enforce_speed_limits(boid, max_speed, min_speed);
-
-        boid->position.x += boid->velocity.vx;
-        boid->position.y += boid->velocity.vy;
+        enforce_movement(boid);
     }
     free(new_velocities);
 }
