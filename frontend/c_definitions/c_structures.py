@@ -35,4 +35,7 @@ class SpawnMode(IntEnum):
     SPAWN_IN_CIRCLE = 2
     SPAWN_RANDOM = 3
     
-
+class BoundaryBehavior(IntEnum):
+    BOUNDARY_TURN = 0
+    BOUNDARY_BOUNCE = 1
+    BOUNDARY_WRAP = 2

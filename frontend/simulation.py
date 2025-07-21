@@ -1,6 +1,7 @@
 import globals
 import state
 
+
 class Simulation:
     def __init__(self):
         """
@@ -15,6 +16,8 @@ class Simulation:
             globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT, globals.VISUAL_RANGE
         )
 
+        self.behavior = globals.BoundaryBehavior.BOUNDARY_BOUNCE
+
         self.update_args = (
             globals.VISUAL_RANGE, globals.PROTECTED_RANGE, globals.CENTERING_FACTOR,
             globals.MATCHING_FACTOR, globals.AVOID_FACTOR, globals.TURN_FACTOR,
@@ -28,7 +31,31 @@ class Simulation:
         Só atualiza se não estiver pausada.
         """
         if not globals.PAUSED:
-            state.boids_lib.update_boids(self.boids, self.grid, *self.update_args, *globals.MOUSE_POS, globals.MOUSE_MOTION, globals.MOUSE_FEAR, globals.MOUSE_ATTRACTION, globals.MOUSE_FEAR_RADIUS, globals.MOUSE_ATTRACTION_RADIUS, globals.INFINITE_SCREEN)
+            state.boids_lib.update_boids(
+                self.boids,                      # 1
+                self.grid,                       # 2
+                globals.BOUNDARY_BEHAVIOR.value, # 3
+                globals.VISUAL_RANGE,            # 4
+                globals.PROTECTED_RANGE,         # 5
+                globals.CENTERING_FACTOR,        # 6
+                globals.MATCHING_FACTOR,         # 7
+                globals.AVOID_FACTOR,            # 8
+                globals.TURN_FACTOR,             # 9
+                globals.BOUNCE_FACTOR,           # 10 
+                globals.MAX_SPEED,               # 11
+                globals.MIN_SPEED,               # 12
+                globals.SCREEN_WIDTH,            # 13
+                globals.SCREEN_HEIGHT,           # 14
+                globals.MARGIN,                  # 15
+                globals.MOUSE_POS[0],            # 16
+                globals.MOUSE_POS[1],            # 17
+                globals.MOUSE_MOTION,            # 18
+                globals.MOUSE_FEAR,              # 19
+                globals.MOUSE_ATTRACTION,        # 20
+                globals.MOUSE_FEAR_RADIUS,       # 21
+                globals.MOUSE_ATTRACTION_RADIUS  # 22
+            )
+            
 
     def cleanup(self):
         """
