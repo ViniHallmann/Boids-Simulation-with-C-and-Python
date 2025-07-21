@@ -2,6 +2,13 @@ import pygame
 import globals
 import time
 
+# ACHO QUE VAMOS TIRAR ISSO DAQUI JUNTO COM OS SLIDERS E TOGGLES. CRIAR UM COMPONENTS.PY QUE 
+# DEFINEM OS COMPONENTES DA UI E A UI VAI ORQUESTRAR A ORGANIZACAO DELES, E O RENDERER QUEM VAI RECEBER E PLOTAR NA TELA
+# POSSIVEL DEFINICAO:
+# DEFINE UM COMPONENTE DE PAINEL NO UI.PY
+# UI.PY GERA COMPONENTES DE SLIDERS, BOTOES, ..., GERERICOS BASEADO NO QUE FOR PEDIDO -> botao(nome,cor,funcao,...)
+# ADICIONA OS SLIDERS NO PAINEL
+# PASSA O PAINEL PRO RENDERER
 class Slider:
     def __init__(self, x, y, width, height, min_val, max_val, initial_val, label, step=None):
         self.rect = pygame.Rect(x, y, width, height)
@@ -79,7 +86,7 @@ class Button:
         text = font.render(self.label, True, (255, 255, 255))
         text_rect = text.get_rect(center=self.rect.center)
         screen.blit(text, text_rect)
-
+####################################################################################
 class UI:
     def __init__(self, screen, clock):
         """
@@ -256,6 +263,8 @@ class UI:
         elif action == "import settings":
             print("Import settings requested")
 
+    # NAO GOSTEI DISSO AQUI
+    # Eu faco o restart_simulation dentro da propria UI.py
     def handle_boids_button_action(self, action):
         """Handle boids control button actions"""
         current_boids = globals.NUM_BIRDS
@@ -273,12 +282,20 @@ class UI:
             new_boids = int(self.boids_slider.val)
         
         if new_boids != current_boids:
-            self.restart_simulation(new_boids)
+            restart_event = pygame.event.Event(pygame.USEREVENT, 
+                action="restart_simulation", 
+                num_birds=new_boids
+            )
+            pygame.event.post(restart_event)
 
+    # POR QUE TEM UM RESTART SIMULATION E UM RESTART SIMULATION WITH BOIDS AQUI? MESMA CHAMADA NO APP.PY
+    # MELHORAR
+    # PRECISA TIPAR ...
     def restart_simulation(self, new_num_birds=None):
         """Request simulation restart through the app instance"""
         # We need a way to communicate with the app instance
         # For now, we'll set a flag that the app can check
+        #restar_simulation_with_boids EH UM BOOLEANDO, POR QUE ESTA RECEBENDO UM NUMERO DE BOIDS?
         if new_num_birds is not None:
             globals.RESTART_SIMULATION_WITH_BOIDS = new_num_birds
         else:
