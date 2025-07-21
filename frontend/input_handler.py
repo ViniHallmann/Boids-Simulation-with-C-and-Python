@@ -79,9 +79,14 @@ class InputHandler:
             globals.PAUSED = not globals.PAUSED
             print(f"P: Simulação {'pausada' if globals.PAUSED else 'retomada'}.")
         elif event.key == pygame.K_6:
-            globals.INFINITE_SCREEN = not globals.INFINITE_SCREEN
-            print(f"P: Tela infinita {'ativada' if globals.INFINITE_SCREEN else 'desativada'}.")
-        
+            globals.BOUNDARY_BEHAVIOR = globals.BoundaryBehavior.BOUNDARY_TURN
+            print("P: Comportamento de limite: TURN.")
+        elif event.key == pygame.K_7:
+            globals.BOUNDARY_BEHAVIOR = globals.BoundaryBehavior.BOUNDARY_BOUNCE
+            print("P: Comportamento de limite: BOUNCE.")
+        elif event.key == pygame.K_8:
+            globals.BOUNDARY_BEHAVIOR = globals.BoundaryBehavior.BOUNDARY_WRAP
+            print("P: Comportamento de limite: WRAP.")
 
     def _mouse_motion(self, event):
         """
