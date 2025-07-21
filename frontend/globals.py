@@ -19,7 +19,7 @@ MATCHING_FACTOR:    float = 0.05
 
 # BOUNCE_FACTOR:     float = 0.1
 BOUNCE_FACTOR:      float = 0.1
-BOUNDARY_BEHAVIOR: BoundaryBehavior = BoundaryBehavior.BOUNDARY_BOUNCE
+BOUNDARY_BEHAVIOR: BoundaryBehavior = BoundaryBehavior.BOUNDARY_TURN
 
 MAX_SPEED:          float = 6.0
 MIN_SPEED:          float = 3.0
@@ -32,7 +32,7 @@ MARGIN_LINE:        bool  = True
 DRAW_PROTECTED_RANGE:   bool = False
 DRAW_VISUAL_RANGE:      bool = False
 
-SHOW_UI_PANEL = False
+SHOW_UI_PANEL = True
 
 BIRD_SIZE: int = 3
 # WHEN BIRD IS DRAWN AS A CIRCLE
@@ -54,14 +54,17 @@ MOUSE_FEAR_RADIUS:          int = 100
 MOUSE_ATTRACTION_RADIUS:    int = 200
 
 PAUSED:                         bool = False
+
+# QUAL A DIFERENCA ENTRE RESTART E RESTART COM BOIDS? 
+# o que significa resetar com boids?
 RESTART_SIMULATION:             bool = False 
-RESTART_SIMULATION_WITH_BOIDS:  bool = False
+# RESTART_SIMULATION_WITH_BOIDS:  bool = False
 
 
 # VARIAVEIS CRITICAS - So podem ser alteradas em tempo de execucao caso o "run" do programa seja reiniciado. 
 # Pra rodar em tempo de execucao vai precisar dar um cleanup e instanciar nova simulation()
-SCREEN_WIDTH:           int = 1920
-SCREEN_HEIGHT:          int = 1080
+SCREEN_WIDTH:           int = 1600
+SCREEN_HEIGHT:          int = 900
 SCREEN_WIDTH_MARGIN:    int = 200
 SCREEN_HEIGHT_MARGIN:   int = 100
 NUM_BIRDS:              int = 100
