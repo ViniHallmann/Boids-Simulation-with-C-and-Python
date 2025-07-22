@@ -1,24 +1,31 @@
 import pygame
 import globals
 import time
+# LER AQUI !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# O QUE EU VEJO COMO PROXIMOS PASSOS (outras coisas podem aparecer ou serem feitas):
+# - REVISAR A UI, MELHORAR A ORGANIZACAO DOS COMPONENTES
+#       - Para isso pegar sliders, toggles, buttons e criar componentes que sejam reutilizaveis
+#       - Criar uma classe UI que vai orquestrar a organizacao dos componentes,
+#         e o renderer vai receber esses componentes e desenhar na tela.
 
-# ACHO QUE VAMOS TIRAR ISSO DAQUI JUNTO COM OS SLIDERS E TOGGLES. CRIAR UM COMPONENTS.PY QUE 
-# DEFINEM OS COMPONENTES DA UI E A UI VAI ORQUESTRAR A ORGANIZACAO DELES, E O RENDERER QUEM VAI RECEBER E PLOTAR NA TELA
-# POSSIVEL DEFINICAO:
-# DEFINE UM COMPONENTE DE PAINEL NO UI.PY
-# UI.PY GERA COMPONENTES DE SLIDERS, BOTOES, ..., GERERICOS BASEADO NO QUE FOR PEDIDO -> botao(nome,cor,funcao,...)
-# ADICIONA OS SLIDERS NO PAINEL
-# PASSA O PAINEL PRO RENDERER
-# DICAS DE OTMIZACAO:
+#       - POSSIVEL DEFINICAO:
+#           1. DEFINE UM COMPONENTE DE PAINEL NO UI.PY
+#           2. UI.PY GERA COMPONENTES DE SLIDERS, BOTOES, ..., GERERICOS BASEADO NO QUE FOR PEDIDO -> botao(nome,cor,funcao,...)
+#           3. ADICIONA OS SLIDERS NO PAINEL
+#           4. PASSA O PAINEL PRO RENDERER
+# - REVISAR A LOGICA DE ATUALIZACAO DOS SLIDERS, TOGGLES E BOTOES
 
-# Cache de Superfícies da UI(gemini q falou):
-#   Textos Estáticos: Rótulos de sliders e botões que nunca mudam devem ser renderizados com font.render() apenas uma vez e armazenados.
+# - REVISAR BOTOES QUE NAO FAZEM NADA
+#   - Tem botao que nao faz nada, tem botao que nao tem funcao definida, tem botao que nao faz o que deveria fazer.
 
-#   Textos Dinâmicos (Otimização): Você já fez isso para o contador de FPS! O texto só é renderizado novamente quando o valor muda. 
-#   Vamos garantir que todos os textos dinâmicos sigam essa regra.
+# - REVISAR INPUT DA UI: Estou podendo ativar um botao com o scroll do mouse, isso nao pode acontecer. ATUALIZAR INPUT_HANDLER.
 
-#   Painéis Compostos: O painel da UI, com seu fundo e títulos, deve ser desenhado em uma única superfície (panel_surface) na inicialização. 
-# O loop principal apenas "blita" essa superfície inteira.
+# DICAS DE OTMIZACAO: Cache de Superfícies da UI(gemini q falou):
+#   1. Textos Estáticos: Rótulos de sliders e botões que nunca mudam devem ser renderizados com font.render() apenas uma vez e armazenados.
+#   2. Textos Dinâmicos (Otimização): Você já fez isso para o contador de FPS! O texto só é renderizado novamente quando o valor muda. 
+#       Vamos garantir que todos os textos dinâmicos sigam essa regra.
+#   3. Painéis Compostos: O painel da UI, com seu fundo e títulos, deve ser desenhado em uma única superfície (panel_surface) na inicialização. 
+#       O loop principal apenas "blita" essa superfície inteira.
 
 #COMPONENTE
 class Slider:
