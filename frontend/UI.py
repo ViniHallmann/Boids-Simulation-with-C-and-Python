@@ -139,9 +139,9 @@ class UI:
             Slider(start_x, current_y, slider_width, slider_height, 0.0, 1.0, globals.TURN_FACTOR, "turn factor"),
             Slider(start_x, current_y + spacing, slider_width, slider_height, 10.0, 200.0, globals.VISUAL_RANGE, "visual range"), # certo 
             Slider(start_x, current_y + spacing*2, slider_width, slider_height, 5.0, 100.0, globals.PROTECTED_RANGE, "protected range"), # certo 
-            Slider(start_x, current_y + spacing*3, slider_width, slider_height, 0.0, 2.0, globals.CENTERING_FACTOR*1000, "centering factor", 0.1), # rever vine 
-            Slider(start_x, current_y + spacing*4, slider_width, slider_height, 0.0, 3.0, globals.AVOID_FACTOR*10, "avoid factor", 0.1), # separacao 
-            Slider(start_x, current_y + spacing*5, slider_width, slider_height, 0.0, 2.0, globals.MATCHING_FACTOR*20, "cohesion force", 0.1), #alinhamento 
+            Slider(start_x, current_y + spacing*3, slider_width, slider_height, 0.0, 2.0, globals.CENTERING_FACTOR*1000, "cohesion", 0.1), # coesao
+            Slider(start_x, current_y + spacing*4, slider_width, slider_height, 0.0, 3.0, globals.AVOID_FACTOR*10, "separation", 0.1), # separacao 
+            Slider(start_x, current_y + spacing*5, slider_width, slider_height, 0.0, 2.0, globals.MATCHING_FACTOR*20, "alignment", 0.1), #alinhamento 
             Slider(start_x, current_y + spacing*6, slider_width, slider_height, 1.0, 10.0, globals.MIN_SPEED, "min speed", 1), #pot certo
             Slider(start_x, current_y + spacing*7, slider_width, slider_height, 1.0, 15.0, globals.MAX_SPEED, "max speed", 1), # pot certo 
         ]
