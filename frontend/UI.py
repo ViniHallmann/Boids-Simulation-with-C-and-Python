@@ -19,6 +19,11 @@ import time
 #   - Tem botao que nao faz nada, tem botao que nao tem funcao definida, tem botao que nao faz o que deveria fazer.
 
 # - REVISAR INPUT DA UI: Estou podendo ativar um botao com o scroll do mouse, isso nao pode acontecer. ATUALIZAR INPUT_HANDLER.
+# - IMPLEMENTAR SCROLL VERTICAL NO PAINEL DA UI
+
+# IMPORTANTE: REVISAR ESCALA DOS SLIDERS. TEMOS VARIAVEIS COM VALORES MUITO PEQUENOS(EX. 0.0005) E OUTRAS COM VALORES MUITO GRANDES(EX. 200.0).
+# Portanto precisa de uma escala que permita o usuario ajustar esses valores de maneira intuitiva. NAO SEI COMO FAZER ISSO.
+# EXEMPLO: Slider protected range nao precisa ser um valor tao grande, seria mais interessante que pudessemos colocar valores menores e mais granulares.
 
 # DICAS DE OTMIZACAO: Cache de Superfícies da UI(gemini q falou):
 #   1. Textos Estáticos: Rótulos de sliders e botões que nunca mudam devem ser renderizados com font.render() apenas uma vez e armazenados.
