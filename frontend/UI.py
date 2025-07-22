@@ -4,6 +4,9 @@ import time
 # LER AQUI !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # QUEM NAO LEU, LER: https://vanhunteradams.com/Pico/Animal_Movement/Boids-algorithm.html pelo menos vai entender o que tu ta fazendo.
 
+# BASE DE COMO A UI PODE SE PARECER:
+# - https://eater.net/boids
+# - https://boids.dan.onl/
 # O QUE EU VEJO COMO PROXIMOS PASSOS (outras coisas podem aparecer ou serem feitas):
 # - REVISAR A UI, MELHORAR A ORGANIZACAO DOS COMPONENTES
 #       - Para isso pegar sliders, toggles, buttons e criar componentes que sejam reutilizaveis
