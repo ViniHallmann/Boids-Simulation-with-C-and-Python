@@ -18,6 +18,7 @@ import time
 # - REVISAR BOTOES QUE NAO FAZEM NADA
 #   - Tem botao que nao faz nada, tem botao que nao tem funcao definida, tem botao que nao faz o que deveria fazer.
 
+# - REVISAR SE ALTERACAO DE VARIAVEIS GLOBAIS ESTA SENDO FEITA DE FORMA CORRETA (TESTAR CADA UMA).
 # - REVISAR INPUT DA UI: Estou podendo ativar um botao com o scroll do mouse, isso nao pode acontecer. ATUALIZAR INPUT_HANDLER.
 # - IMPLEMENTAR SCROLL VERTICAL NO PAINEL DA UI
 
