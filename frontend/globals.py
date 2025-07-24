@@ -51,7 +51,7 @@ MOUSE_MOTION:       bool = True
 MOUSE_FEAR:         bool = False
 MOUSE_ATTRACTION:   bool = False
 MOUSE_FEAR_RADIUS:          int = 100
-MOUSE_ATTRACTION_RADIUS:    int = 200
+MOUSE_ATTRACTION_RADIUS:    int = 100
 
 PAUSED:                         bool = False
 
@@ -67,7 +67,7 @@ SCREEN_WIDTH:           int = 1300
 SCREEN_HEIGHT:          int = 700
 SCREEN_WIDTH_MARGIN:    int = 200
 SCREEN_HEIGHT_MARGIN:   int = 100
-NUM_BIRDS:              int = 10000
+NUM_BIRDS:              int = 1000
 PLATFORM_SYSTEM: str = platform.system()
 SUPPORTED_PLATFORMS = ["Windows", "Darwin", "Linux"]
 LIBRARY_EXTENSIONS = {

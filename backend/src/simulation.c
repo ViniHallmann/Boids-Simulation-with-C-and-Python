@@ -126,9 +126,17 @@ static void enforce_bounce_screen(Entity* boid, float bounce_factor, int width, 
     }
 }
 
-static void enforce_mouse_events(Entity* boid, int mouse_x, int mouse_y, bool mouse_fear, bool mouse_attraction, bool mouse_motion, int mouse_fear_radius, int mouse_attraction_radius){
+static void enforce_mouse_events(Entity* boid, int mouse_x, int mouse_y, bool mouse_motion, bool mouse_fear, bool mouse_attraction,  int mouse_fear_radius, int mouse_attraction_radius){
     if (!mouse_motion) return;
-    mouse_fear ? apply_mouse_events(boid, mouse_x, mouse_y, mouse_fear_radius, -1.0f) : apply_mouse_events(boid, mouse_x, mouse_y, mouse_attraction_radius, 1.0f);
+    if (mouse_fear && mouse_attraction) {
+        return; // If both are active, do nothing
+    }
+    if (mouse_fear) {
+        apply_mouse_events(boid, mouse_x, mouse_y, mouse_fear_radius, -1.0f);
+    }
+    if (mouse_attraction) {
+        apply_mouse_events(boid, mouse_x, mouse_y, mouse_attraction_radius, 1.0f);
+    }
 }
 
 static void enforce_movement(Entity* boid){
@@ -177,7 +185,7 @@ void update_boids(Boids* boids, Grid *grid, BoundaryBehavior behavior,
                 break;
         }
 
-        enforce_mouse_events(boid, mouse_x, mouse_y, mouse_fear, mouse_motion, mouse_attraction, mouse_fear_radius, mouse_attraction_radius);
+        enforce_mouse_events(boid, mouse_x, mouse_y, mouse_motion, mouse_fear,  mouse_attraction, mouse_fear_radius, mouse_attraction_radius);
         enforce_speed_limits(boid, max_speed, min_speed);
         enforce_movement(boid);
     }

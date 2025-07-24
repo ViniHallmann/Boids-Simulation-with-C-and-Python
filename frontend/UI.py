@@ -32,6 +32,8 @@ class Slider:
         self.dragging = False
         self.handle_radius = height // 2
         
+
+    #isso aqui funciona MAS acho que da pra integrar com o input_handler.py e fazer com que ele lide com esses evento.
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.rect.collidepoint(event.pos):
@@ -39,6 +41,7 @@ class Slider:
         elif event.type == pygame.MOUSEBUTTONUP:
             self.dragging = False
         elif event.type == pygame.MOUSEMOTION and self.dragging:
+            #ISSO AQUI pode virar uma funcao nao?
             rel_x = event.pos[0] - self.rect.x
             rel_x = max(0, min(rel_x, self.rect.width))
             self.val = self.min_val + (rel_x / self.rect.width) * (self.max_val - self.min_val)
@@ -63,7 +66,8 @@ class ToggleButton:
         self.rect = pygame.Rect(x, y, width, height)
         self.label = label
         self.state = initial_state
-        
+
+    #Mesma coisa dos inputs do Slider, podemos integrar com o input_handler.py
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.rect.collidepoint(event.pos):
@@ -86,7 +90,8 @@ class Button:
         self.rect = pygame.Rect(x, y, width, height)
         self.label = label
         self.color = color
-        
+    
+    #msm coisa
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.rect.collidepoint(event.pos):
@@ -187,6 +192,7 @@ class UI:
         # Debounce timer for boids slider
         self.boids_slider_last_update = 0
 
+    # Essa funcao parece fazer muita coisa, acho que da pra refatorar!!!!
     def handle_event(self, event):
         """Handle events for the config panel"""
         if not globals.SHOW_UI_PANEL:
