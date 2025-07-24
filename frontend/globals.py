@@ -14,7 +14,7 @@ DEFAULT_SETTINGS = {
     "MAX_SPEED": 6.0,
     "BOUNCE_FACTOR": 0.1,
     "BOUNDARY_BEHAVIOR": BoundaryBehavior.BOUNDARY_TURN,
-    "NUM_BIRDS": 5000,
+    "NUM_BIRDS": 1500,
     "MARGIN_LINE": True,
     "DRAW_PROTECTED_RANGE": False,
     "DRAW_VISUAL_RANGE": False,
@@ -54,11 +54,14 @@ BLUR: bool = False
 BLUR_TRANSPARENCY_VALUE: int = 15
 
 MOUSE_POS:          tuple = (0, 0)
-MOUSE_MOTION:       bool = True
+
+#ADICIONAR BOTAO DISSO AQUI
+MOUSE_MOTION:       bool = False
 MOUSE_FEAR:         bool = False
 MOUSE_ATTRACTION:   bool = False
 MOUSE_FEAR_RADIUS:          int = 100
 MOUSE_ATTRACTION_RADIUS:    int = 200
+#####
 
 # --- CRITICAL VARIABLES ---
 SCREEN_WIDTH:           int = 1300

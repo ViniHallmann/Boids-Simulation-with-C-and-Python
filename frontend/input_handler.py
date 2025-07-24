@@ -105,6 +105,11 @@ class InputHandler:
             if globals.MOUSE_FEAR:
                 globals.MOUSE_ATTRACTION = False
             print(f"P: MOUSE_FEAR {'ativado' if globals.MOUSE_FEAR else 'desativado'}.")
+        elif event.button == 3: # Clique Direito
+            globals.MOUSE_ATTRACTION = not globals.MOUSE_ATTRACTION
+            if globals.MOUSE_ATTRACTION:
+                globals.MOUSE_FEAR = False
+            print(f"P: MOUSE_ATTRACTION {'ativado' if globals.MOUSE_ATTRACTION else 'desativado'}.")
 
     def _user_event_handler(self, event):
         """
