@@ -5,7 +5,6 @@ import json
 import os
 
 # --- COMPONENTES DA UI REUTILIZÁVEIS ---
-
 class Slider:
     def __init__(self, label, min_val, max_val, initial_val, callback, value_factor=1.0, step=None):
         self.label = label
@@ -150,9 +149,17 @@ class UI:
 
         self.panel_width = 320
         self.panel_height = screen.get_height()
+
+        self.visible_x = self.screen.get_width() - self.panel_width
+        self.hidden_x = self.screen.get_width()
+        self.target_x = self.hidden_x
+        self.current_x = float(self.hidden_x)
+
+        self.animation_speed = 0.1 
+
         self.visible_panel = pygame.Surface((self.panel_width, self.panel_height))
         self.visible_panel.set_alpha(230)
-        self.panel_rect = self.visible_panel.get_rect(topright=self.screen.get_rect().topright)
+        self.panel_rect = self.visible_panel.get_rect(topleft=(self.current_x, 0))
         globals.UI_PANEL_RECT = self.panel_rect
 
         self.content_surface = None
@@ -164,7 +171,7 @@ class UI:
         
         self.settings_dir = "settings"
         self.settings_filepath = os.path.join(self.settings_dir, "settings.json")
-        
+
         self.init_controls()
         print("P: UI inicializada com sucesso (versão com Import/Export).")
 
@@ -377,9 +384,9 @@ class UI:
 
     def draw(self):
         self.draw_fps()
-        if not globals.SHOW_UI_PANEL:
-            return
-
+        #if not globals.SHOW_UI_PANEL:
+        #    return
+        #if self.current_x < self.screen.get_width():
         self.content_surface.fill((20, 25, 35))
         self._draw_all_controls_to_surface(self.content_surface)
 
@@ -490,3 +497,16 @@ class UI:
         y_cursor += 45
         
         return y_cursor
+    
+    def update(self):
+
+        if globals.SHOW_UI_PANEL:
+            self.target_x = self.visible_x
+        else:
+            self.target_x = self.hidden_x
+            
+        self.current_x += (self.target_x - self.current_x) * self.animation_speed
+    
+        self.panel_rect.x = int(self.current_x)
+        
+        globals.UI_PANEL_RECT = self.panel_rect

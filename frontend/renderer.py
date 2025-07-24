@@ -118,6 +118,7 @@ class Renderer:
         self.draw_margins(globals.MARGIN_WIDTH, globals.MARGIN_DASH_LENGTH)
 
         self.UI.draw()
+        self.UI.update()
 
         pygame.display.flip()
 
