@@ -26,6 +26,7 @@ class Slider:
         label_text = f"{self.label}:"
         self.font_surface = font.render(label_text, True, (200, 200, 200))
 
+    #isso aqui funciona MAS acho que da pra integrar com o input_handler.py e fazer com que ele lide com esses evento.
     def handle_event(self, event):
         if not hasattr(event, 'pos'): return False
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -57,6 +58,31 @@ class Slider:
         handle_x = self.rect.x + (self.val - self.min_val) / (self.max_val - self.min_val) * self.rect.width
         pygame.draw.circle(surface, (100, 150, 255), (int(handle_x), self.rect.centery), self.handle_radius + 1)
 
+#COMPONENTE
+class ToggleButton:
+    def __init__(self, x, y, width, height, label, initial_state=False):
+        self.rect = pygame.Rect(x, y, width, height)
+        self.label = label
+        self.state = initial_state
+
+    #Mesma coisa dos inputs do Slider, podemos integrar com o input_handler.py
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.rect.collidepoint(event.pos):
+                self.state = not self.state
+                return True
+        return False
+                
+    def draw(self, screen, font):
+        color = (50, 150, 50) if self.state else (150, 50, 50)
+        pygame.draw.rect(screen, color, self.rect, border_radius=5)
+        pygame.draw.rect(screen, (255, 255, 255), self.rect, width=2, border_radius=5)
+        
+        text = font.render(self.label, True, (255, 255, 255))
+        text_rect = text.get_rect(center=self.rect.center)
+        screen.blit(text, text_rect)
+
+#COMPONENTE
 class Button:
     def __init__(self, label, callback, color=(70, 70, 70)):
         self.label = label
@@ -71,6 +97,7 @@ class Button:
         self.rect = pygame.Rect(x, y, width, height)
         self.font_surface = font.render(self.label, True, (255, 255, 255))
 
+    #msm coisa
     def handle_event(self, event):
         if not hasattr(event, 'pos'): return False
         if self.rect.collidepoint(event.pos):
@@ -164,6 +191,12 @@ class UI:
     def _import_settings(self):
         """Carrega as configurações de um arquivo JSON e atualiza a UI."""
         print(f"P: Importando configurações de {self.settings_filepath}...")
+        
+    # Essa funcao parece fazer muita coisa, acho que da pra refatorar!!!!
+    def handle_event(self, event):
+        """Handle events for the config panel"""
+        if not globals.SHOW_UI_PANEL:
+            return False
         
         if not os.path.exists(self.settings_filepath):
             print(f"ERRO: Arquivo de configurações não encontrado em {self.settings_filepath}")

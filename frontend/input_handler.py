@@ -33,6 +33,7 @@ class InputHandler:
             pygame.KEYDOWN: self._key_down,
             pygame.MOUSEMOTION: self._mouse_motion,
             pygame.MOUSEBUTTONDOWN: self._mouse_button_down,
+            pygame.MOUSEBUTTONUP: self._mouse_button_up,
             pygame.USEREVENT: self._user_event_handler
         }
     
@@ -111,6 +112,16 @@ class InputHandler:
                 globals.MOUSE_FEAR = False
             print(f"P: MOUSE_ATTRACTION {'ativado' if globals.MOUSE_ATTRACTION else 'desativado'}.")
 
+    def _mouse_button_up(self, event):
+        """
+        Manipulador para botões do mouse liberados.
+        """
+        if event.button == 1:
+            globals.MOUSE_FEAR = False
+            print("P: MOUSE_FEAR desativado.")
+        elif event.button == 3:
+            globals.MOUSE_ATTRACTION = False
+            print("P: MOUSE_ATTRACTION desativado.")
     def _user_event_handler(self, event):
         """
         Manipulador para eventos personalizados (USEREVENT).

@@ -56,7 +56,7 @@ BLUR_TRANSPARENCY_VALUE: int = 15
 MOUSE_POS:          tuple = (0, 0)
 
 #ADICIONAR BOTAO DISSO AQUI
-MOUSE_MOTION:       bool = False
+MOUSE_MOTION:       bool = True
 MOUSE_FEAR:         bool = False
 MOUSE_ATTRACTION:   bool = False
 MOUSE_FEAR_RADIUS:          int = 100
