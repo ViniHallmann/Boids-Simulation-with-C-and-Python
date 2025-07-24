@@ -97,17 +97,14 @@ class InputHandler:
     
     def _mouse_button_down(self, event):
         """
-        Manipulador para botões do mouse pressionados (modo toggle).
+        Manipulador para botões do mouse.
+        O clique esquerdo alterna o modo 'medo'. O direito não faz nada.
         """
-        if event.button == 1:
+        if event.button == 1: # Clique Esquerdo
             globals.MOUSE_FEAR = not globals.MOUSE_FEAR
-            if globals.MOUSE_FEAR: globals.MOUSE_ATTRACTION = False
+            if globals.MOUSE_FEAR:
+                globals.MOUSE_ATTRACTION = False
             print(f"P: MOUSE_FEAR {'ativado' if globals.MOUSE_FEAR else 'desativado'}.")
-
-        elif event.button == 3: 
-            globals.MOUSE_ATTRACTION = not globals.MOUSE_ATTRACTION
-            if globals.MOUSE_ATTRACTION: globals.MOUSE_FEAR = False
-            print(f"P: MOUSE_ATTRACTION {'ativado' if globals.MOUSE_ATTRACTION else 'desativado'}.")
 
     def _user_event_handler(self, event):
         """

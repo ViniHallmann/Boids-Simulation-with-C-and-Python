@@ -1,0 +1,11 @@
+{
+    "Turn Factor": 0.2,
+    "Cohesion": 0.0005,
+    "Separation": 0.1,
+    "Alignment": 0.05,
+    "Min Speed": 3.0,
+    "Max Speed": 6.0,
+    "Visual Range": 45.0,
+    "Protected Range": 6.0,
+    "Boids Count": 2900.0
+}

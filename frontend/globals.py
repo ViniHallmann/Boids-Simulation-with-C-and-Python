@@ -2,43 +2,50 @@ import platform
 from c_definitions.c_structures import SpawnMode
 from c_definitions.c_structures import BoundaryBehavior
 
-# VARIAVEIS NAO CRITICAS - Podem ser alteradas em tempo de execucao sem reiniciar o programa.
-# Implementar uma interface para alterar essas variaveis em tempo de execucao.
-TURN_FACTOR:        float = 0.2
-VISUAL_RANGE:       float = 45.0
-PROTECTED_RANGE:    float = 6.0
+# --- DEFAULT SETTINGS ---
+DEFAULT_SETTINGS = {
+    "TURN_FACTOR": 0.2,
+    "VISUAL_RANGE": 45.0,
+    "PROTECTED_RANGE": 6.0,
+    "CENTERING_FACTOR": 0.0005,
+    "AVOID_FACTOR": 0.1,
+    "MATCHING_FACTOR": 0.05,
+    "MIN_SPEED": 3.0,
+    "MAX_SPEED": 6.0,
+    "BOUNCE_FACTOR": 0.1,
+    "BOUNDARY_BEHAVIOR": BoundaryBehavior.BOUNDARY_TURN,
+    "NUM_BIRDS": 5000,
+    "MARGIN_LINE": True,
+    "DRAW_PROTECTED_RANGE": False,
+    "DRAW_VISUAL_RANGE": False,
+}
 
-# COESAO
-CENTERING_FACTOR:   float = 0.0005
-
-# SEPARACAO
-AVOID_FACTOR:       float = 0.1
-
-# ALINHAMENTO
-MATCHING_FACTOR:    float = 0.05
-
-# BOUNCE_FACTOR:     float = 0.1
-BOUNCE_FACTOR:      float = 0.1
-BOUNDARY_BEHAVIOR: BoundaryBehavior = BoundaryBehavior.BOUNDARY_TURN
-  
-MAX_SPEED:          float = 6.0
-MIN_SPEED:          float = 3.0
+# --- NON-CRITICAL VARIABLES ---
+TURN_FACTOR:        float = DEFAULT_SETTINGS["TURN_FACTOR"]
+VISUAL_RANGE:       float = DEFAULT_SETTINGS["VISUAL_RANGE"]
+PROTECTED_RANGE:    float = DEFAULT_SETTINGS["PROTECTED_RANGE"]
+CENTERING_FACTOR:   float = DEFAULT_SETTINGS["CENTERING_FACTOR"]
+AVOID_FACTOR:       float = DEFAULT_SETTINGS["AVOID_FACTOR"]
+MATCHING_FACTOR:    float = DEFAULT_SETTINGS["MATCHING_FACTOR"]
+BOUNCE_FACTOR:      float = DEFAULT_SETTINGS["BOUNCE_FACTOR"]
+BOUNDARY_BEHAVIOR:  BoundaryBehavior = DEFAULT_SETTINGS["BOUNDARY_BEHAVIOR"]
+MAX_SPEED:          float = DEFAULT_SETTINGS["MAX_SPEED"]
+MIN_SPEED:          float = DEFAULT_SETTINGS["MIN_SPEED"]
 
 MARGIN_WIDTH:       int = 2
 MARGIN_DASH_LENGTH: int = 10
-MARGIN:             int   = 150
-MARGIN_LINE:        bool  = True
+MARGIN:             int = 150
+MARGIN_LINE:        bool = DEFAULT_SETTINGS["MARGIN_LINE"]
 
-DRAW_PROTECTED_RANGE:   bool = False
-DRAW_VISUAL_RANGE:      bool = False
+DRAW_PROTECTED_RANGE: bool = DEFAULT_SETTINGS["DRAW_PROTECTED_RANGE"]
+DRAW_VISUAL_RANGE:    bool = DEFAULT_SETTINGS["DRAW_VISUAL_RANGE"]
 
 SHOW_UI_PANEL = True
+PAUSED: bool = False
 
 BIRD_SIZE: int = 3
-# WHEN BIRD IS DRAWN AS A CIRCLE
 BIRD_WIDTH:         int   = 1
 BIRD_RADIUS:        float = 2.5
-################################
 BIRD_COLOR:         tuple = (255, 255, 255)
 
 BACKGROUND_COLOR:   tuple = (10, 20, 40)
@@ -53,21 +60,13 @@ MOUSE_ATTRACTION:   bool = False
 MOUSE_FEAR_RADIUS:          int = 100
 MOUSE_ATTRACTION_RADIUS:    int = 200
 
-PAUSED:                         bool = False
-
-# QUAL A DIFERENCA ENTRE RESTART E RESTART COM BOIDS? 
-# o que significa resetar com boids?
-RESTART_SIMULATION:             bool = False 
-# RESTART_SIMULATION_WITH_BOIDS:  bool = False
-
-
-# VARIAVEIS CRITICAS - So podem ser alteradas em tempo de execucao caso o "run" do programa seja reiniciado. 
-# Pra rodar em tempo de execucao vai precisar dar um cleanup e instanciar nova simulation()
+# --- CRITICAL VARIABLES ---
 SCREEN_WIDTH:           int = 1300
 SCREEN_HEIGHT:          int = 700
-SCREEN_WIDTH_MARGIN:    int = 200
-SCREEN_HEIGHT_MARGIN:   int = 100
-NUM_BIRDS:              int = 10000
+NUM_BIRDS:              int = DEFAULT_SETTINGS["NUM_BIRDS"]
+UI_PANEL_RECT = None # Usado pela UI e Simulação
+
+# Platform-specific configurations
 PLATFORM_SYSTEM: str = platform.system()
 SUPPORTED_PLATFORMS = ["Windows", "Darwin", "Linux"]
 LIBRARY_EXTENSIONS = {

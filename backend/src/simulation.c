@@ -126,7 +126,8 @@ static void enforce_bounce_screen(Entity* boid, float bounce_factor, int width, 
     }
 }
 
-static void enforce_mouse_events(Entity* boid, int mouse_x, int mouse_y, bool mouse_fear, bool mouse_attraction, int mouse_fear_radius, int mouse_attraction_radius){
+static void enforce_mouse_events(Entity* boid, int mouse_x, int mouse_y, bool mouse_fear, bool mouse_attraction, bool mouse_motion, int mouse_fear_radius, int mouse_attraction_radius){
+    if (!mouse_motion) return;
     mouse_fear ? apply_mouse_events(boid, mouse_x, mouse_y, mouse_fear_radius, -1.0f) : apply_mouse_events(boid, mouse_x, mouse_y, mouse_attraction_radius, 1.0f);
 }
 
@@ -163,9 +164,20 @@ void update_boids(Boids* boids, Grid *grid, BoundaryBehavior behavior,
     for (int i = 0; i < boids->count; i++) {
         Entity* boid = &boids->entities[i];
         boid->velocity = new_velocities[i];
-        enforce_screen_boundaries(boid, turn_factor, screen_width, screen_height, margin);
-        if (mouse_motion)
-            enforce_mouse_events(boid, mouse_x, mouse_y, mouse_fear, mouse_attraction, mouse_fear_radius, mouse_attraction_radius);
+        
+        switch (behavior) {
+            case BOUNDARY_TURN:
+                enforce_screen_boundaries(boid, turn_factor, screen_width, screen_height, margin);
+                break;
+            case BOUNDARY_BOUNCE:
+                enforce_bounce_screen(boid, bounce_factor, screen_width, screen_height);
+                break;
+            case BOUNDARY_WRAP:
+                enforce_infinite_screen(boid, screen_width, screen_height);
+                break;
+        }
+
+        enforce_mouse_events(boid, mouse_x, mouse_y, mouse_fear, mouse_motion, mouse_attraction, mouse_fear_radius, mouse_attraction_radius);
         enforce_speed_limits(boid, max_speed, min_speed);
         enforce_movement(boid);
     }
