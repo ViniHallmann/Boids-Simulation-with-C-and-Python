@@ -199,6 +199,9 @@ class UI:
         """Carrega as configurações de um arquivo JSON e atualiza a UI."""
         print(f"P: Importando configurações de {self.settings_filepath}...")
         
+
+    ## TEM DOIS HANDLE_EVENT DEFINIDOS NA MESMA CLASSE. MUDAR ISSO POIS UMA DAS FUNCOES SERA IGNORADA.
+    #OU JUNTA A LOGICA OU MUDA O NOME DE UMA DELAS. 
     # Essa funcao parece fazer muita coisa, acho que da pra refatorar!!!!
     def handle_event(self, event):
         """Handle events for the config panel"""
