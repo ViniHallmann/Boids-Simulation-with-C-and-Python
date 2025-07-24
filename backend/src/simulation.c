@@ -2,18 +2,17 @@
 #include "grid.h" 
 #include <omp.h>
 
-static void apply_mouse_events(Entity* boid, int mouse_x, int mouse_y, int radius, float force){
+static void apply_mouse_events(Entity* boid, int mouse_x, int mouse_y, float radius_sq, float inv_radius, float force) {
     float dx = boid->position.x - mouse_x;
     float dy = boid->position.y - mouse_y;
     float distance_sq = dx * dx + dy * dy;
-    if (distance_sq < radius * radius) {
+    if (distance_sq < radius_sq && distance_sq > 0.0001f) {
         float distance = sqrtf(distance_sq);
-        float avoid_factor = (radius - distance) / radius;
-        if (distance > 0) {
-            // O que faz com que mude de fear ou attraction é o sinal do force ( + ou - ) 
-            boid->velocity.vx += force * (dx / distance) * avoid_factor;
-            boid->velocity.vy += force * (dy / distance) * avoid_factor;
-        }
+        float force_magnitude = force * (1.0f - distance * inv_radius);
+        float adjustment_factor = force_magnitude / distance;
+
+        boid->velocity.vx += dx * adjustment_factor;
+        boid->velocity.vy += dy * adjustment_factor;
     }
 }
 
