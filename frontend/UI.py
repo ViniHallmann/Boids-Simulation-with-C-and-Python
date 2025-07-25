@@ -5,6 +5,7 @@ import json
 import os
 
 # --- COMPONENTES DA UI REUTILIZÁVEIS ---
+
 class Slider:
     def __init__(self, label, min_val, max_val, initial_val, callback, value_factor=1.0, step=None):
         self.label = label
@@ -493,7 +494,6 @@ class UI:
         else:
             self.target_x = self.hidden_x
             
-        # Animação de entrada/saída do painel
         if abs(self.target_x - self.current_x) > 0.5:
             self.current_x += (self.target_x - self.current_x) * self.animation_speed
         else:

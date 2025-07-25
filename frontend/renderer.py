@@ -2,6 +2,7 @@ import pygame
 import globals
 import math
 from UI import UI
+
 class Renderer:
     def __init__(self, clock):
         """
@@ -19,6 +20,11 @@ class Renderer:
             (self.bird_size * -0.5, self.bird_size * 0.5)]
         
         self.UI = UI(self.screen, clock)
+        
+        self.toggle_button_font = pygame.font.Font(None, 50)
+        self.show_panel_surf = self.toggle_button_font.render("<", True, (200, 200, 200))
+        self.hide_panel_surf = self.toggle_button_font.render(">", True, (200, 200, 200))
+        self.toggle_button_rect = self.show_panel_surf.get_rect()
 
         pygame.display.set_caption("P: Simulação de Boids (C + Python)")
         print("P: Renderer inicializado.")
@@ -97,8 +103,6 @@ class Renderer:
             globals.SCREEN_WIDTH - 2 * globals.MARGIN,
             globals.SCREEN_HEIGHT - 2 * globals.MARGIN
         )
-        # DESENHO DA MARGEM RETA
-            #pygame.draw.rect(self.screen, margin_color, margin_rect, 2)
         self._draw_dashed_rect(self.screen, margin_color, margin_rect, width, dash_length)
 
     def draw(self, simulation):
@@ -114,11 +118,17 @@ class Renderer:
             draw_boid_func(entities[i])
         
         self.draw_boids_range(simulation)
-
         self.draw_margins(globals.MARGIN_WIDTH, globals.MARGIN_DASH_LENGTH)
 
-        self.UI.draw()
         self.UI.update()
+        self.UI.draw()
+        panel_edge_x = self.UI.panel_rect.x
+        current_surf = self.hide_panel_surf if globals.SHOW_UI_PANEL else self.show_panel_surf
+        self.toggle_button_rect = current_surf.get_rect(
+            centery=globals.SCREEN_HEIGHT // 2,
+            right=panel_edge_x - 5
+        )
+        self.screen.blit(current_surf, self.toggle_button_rect)
 
         pygame.display.flip()
 

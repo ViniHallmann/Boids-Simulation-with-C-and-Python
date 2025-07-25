@@ -19,10 +19,14 @@ class InputHandler:
             if event.type == pygame.MOUSEBUTTONUP:
                 self._mouse_button_up(event)
 
-            ui_handled = self.app.renderer.UI.handle_event(event)
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if self.app.renderer.toggle_button_rect.collidepoint(event.pos):
+                    globals.SHOW_UI_PANEL = not globals.SHOW_UI_PANEL
+                    continue
 
+            ui_handled = self.app.renderer.UI.handle_event(event)
+            
             if not ui_handled:
-                # Evita chamar o _mouse_button_up duas vezes
                 if event.type != pygame.MOUSEBUTTONUP:
                     handler = self.event_handlers.get(event.type)
                     if handler:
@@ -128,13 +132,13 @@ class InputHandler:
             if globals.MOUSE_ATTRACTION:
                 globals.MOUSE_ATTRACTION = False
                 print("P: MOUSE_ATTRACTION desativado.")
-
+                
     def _user_event_handler(self, event):
         """
         Manipulador para eventos personalizados (USEREVENT).
         Distribui o evento para o método correto baseado no tipo de ação.
         """
-        if event.action == "restart_simulation":
+        if hasattr(event, "action") and event.action == "restart_simulation":
             self.app.restart_simulation(event.num_birds)
         else:
-            print(f"P: Evento desconhecido: {event.action}")
+            print(f"P: Evento de usuário desconhecido ou sem ação: {event}")
