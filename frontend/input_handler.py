@@ -16,13 +16,17 @@ class InputHandler:
         Este método será chamado a cada quadro pelo loop principal da App.
         """
         for event in pygame.event.get():
-            
+            if event.type == pygame.MOUSEBUTTONUP:
+                self._mouse_button_up(event)
+
             ui_handled = self.app.renderer.UI.handle_event(event)
-            
+
             if not ui_handled:
-                handler = self.event_handlers.get(event.type)
-                if handler:
-                    handler(event)
+                # Evita chamar o _mouse_button_up duas vezes
+                if event.type != pygame.MOUSEBUTTONUP:
+                    handler = self.event_handlers.get(event.type)
+                    if handler:
+                        handler(event)
 
     def _setup_event_handlers(self):
         """
@@ -117,11 +121,14 @@ class InputHandler:
         Manipulador para botões do mouse liberados.
         """
         if event.button == 1:
-            globals.MOUSE_FEAR = False
-            print("P: MOUSE_FEAR desativado.")
+            if globals.MOUSE_FEAR:
+                globals.MOUSE_FEAR = False
+                print("P: MOUSE_FEAR desativado.")
         elif event.button == 3:
-            globals.MOUSE_ATTRACTION = False
-            print("P: MOUSE_ATTRACTION desativado.")
+            if globals.MOUSE_ATTRACTION:
+                globals.MOUSE_ATTRACTION = False
+                print("P: MOUSE_ATTRACTION desativado.")
+
     def _user_event_handler(self, event):
         """
         Manipulador para eventos personalizados (USEREVENT).

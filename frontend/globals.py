@@ -18,6 +18,7 @@ DEFAULT_SETTINGS = {
     "MARGIN_LINE": True,
     "DRAW_PROTECTED_RANGE": False,
     "DRAW_VISUAL_RANGE": False,
+    "MOUSE_MOTION": True,
 }
 
 # --- NON-CRITICAL VARIABLES ---
@@ -55,8 +56,8 @@ BLUR_TRANSPARENCY_VALUE: int = 15
 
 MOUSE_POS:          tuple = (0, 0)
 
-#ADICIONAR BOTAO DISSO AQUI
-MOUSE_MOTION:       bool = True
+# --- MOUSE INTERACTION VARIABLES ---
+MOUSE_MOTION:       bool = DEFAULT_SETTINGS["MOUSE_MOTION"]
 MOUSE_FEAR:         bool = False
 MOUSE_ATTRACTION:   bool = False
 MOUSE_FEAR_RADIUS:          int = 100

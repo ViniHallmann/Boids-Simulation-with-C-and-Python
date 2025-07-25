@@ -26,6 +26,7 @@ class Slider:
         self.font_surface = font.render(label_text, True, (200, 200, 200))
 
     #isso aqui funciona MAS acho que da pra integrar com o input_handler.py e fazer com que ele lide com esses evento.
+    #att: posso fazer isso, mas acho que assim é mais escalável deixa cada componente gerenciando os próprios eventos.
     def handle_event(self, event):
         if not hasattr(event, 'pos'): return False
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -57,31 +58,6 @@ class Slider:
         handle_x = self.rect.x + (self.val - self.min_val) / (self.max_val - self.min_val) * self.rect.width
         pygame.draw.circle(surface, (100, 150, 255), (int(handle_x), self.rect.centery), self.handle_radius + 1)
 
-#COMPONENTE
-class ToggleButton:
-    def __init__(self, x, y, width, height, label, initial_state=False):
-        self.rect = pygame.Rect(x, y, width, height)
-        self.label = label
-        self.state = initial_state
-
-    #Mesma coisa dos inputs do Slider, podemos integrar com o input_handler.py
-    def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.rect.collidepoint(event.pos):
-                self.state = not self.state
-                return True
-        return False
-                
-    def draw(self, screen, font):
-        color = (50, 150, 50) if self.state else (150, 50, 50)
-        pygame.draw.rect(screen, color, self.rect, border_radius=5)
-        pygame.draw.rect(screen, (255, 255, 255), self.rect, width=2, border_radius=5)
-        
-        text = font.render(self.label, True, (255, 255, 255))
-        text_rect = text.get_rect(center=self.rect.center)
-        screen.blit(text, text_rect)
-
-#COMPONENTE
 class Button:
     def __init__(self, label, callback, color=(70, 70, 70)):
         self.label = label
@@ -96,7 +72,6 @@ class Button:
         self.rect = pygame.Rect(x, y, width, height)
         self.font_surface = font.render(self.label, True, (255, 255, 255))
 
-    #msm coisa
     def handle_event(self, event):
         if not hasattr(event, 'pos'): return False
         if self.rect.collidepoint(event.pos):
@@ -118,8 +93,10 @@ class Button:
 class ToggleButton(Button):
     def __init__(self, label, initial_state, callback):
         self.state = initial_state
-        super().__init__(label, lambda: self.toggle(), color=self.get_color())
         self.state_callback = callback
+        super().__init__(label, lambda: self.toggle(), color=self.get_color())
+        self.state_callback(self.state)
+
 
     def toggle(self):
         self.state = not self.state
@@ -129,6 +106,10 @@ class ToggleButton(Button):
 
     def get_color(self):
         return (50, 150, 50) if self.state else (150, 50, 50)
+
+    def draw(self, surface):
+        self.font_surface = self.font_medium.render(f"{self.label}: {'ON' if self.state else 'OFF'}", True, (255, 255, 255))
+        super().draw(surface)
 
 
 # --- UI MANAGER CLASS ---
@@ -184,6 +165,8 @@ class UI:
             if isinstance(control, Slider):
                 real_value = control.val * control.value_factor if hasattr(control, 'value_factor') else control.val
                 settings_data[control.label] = real_value
+            elif isinstance(control, ToggleButton):
+                 settings_data[control.label] = control.state
         
         settings_data["Boids Count"] = self.staged_boid_count
         
@@ -199,15 +182,6 @@ class UI:
         """Carrega as configurações de um arquivo JSON e atualiza a UI."""
         print(f"P: Importando configurações de {self.settings_filepath}...")
         
-
-    ## TEM DOIS HANDLE_EVENT DEFINIDOS NA MESMA CLASSE. MUDAR ISSO POIS UMA DAS FUNCOES SERA IGNORADA.
-    #OU JUNTA A LOGICA OU MUDA O NOME DE UMA DELAS. 
-    # Essa funcao parece fazer muita coisa, acho que da pra refatorar!!!!
-    def handle_event(self, event):
-        """Handle events for the config panel"""
-        if not globals.SHOW_UI_PANEL:
-            return False
-        
         if not os.path.exists(self.settings_filepath):
             print(f"ERRO: Arquivo de configurações não encontrado em {self.settings_filepath}")
             return
@@ -219,17 +193,20 @@ class UI:
             for control in self.controls:
                 if isinstance(control, Slider) and control.label in loaded_data:
                     loaded_value = loaded_data[control.label]
-                    
                     control.val = loaded_value / control.value_factor if hasattr(control, 'value_factor') and control.value_factor != 0 else loaded_value
-                    
                     control.callback(loaded_value)
+                elif isinstance(control, ToggleButton) and control.label in loaded_data:
+                    loaded_state = loaded_data[control.label]
+                    if control.state != loaded_state:
+                         control.toggle()
+
 
             if "Boids Count" in loaded_data:
                 self.staged_boid_count = loaded_data["Boids Count"]
                 self.boid_count_slider.val = self.staged_boid_count
                 self.boid_count_slider.callback(self.staged_boid_count)
 
-            print("P: Configurações importadas. Clique em 'Restart Simulation' para aplicar.")
+            print("P: Configurações importadas. Clique em 'Apply Count & Restart' para aplicar as mudanças.")
 
         except Exception as e:
             print(f"ERRO: Falha ao importar configurações: {e}")
@@ -250,16 +227,22 @@ class UI:
             Slider("Protected Range", 5.0, 100.0, globals.DEFAULT_SETTINGS["PROTECTED_RANGE"], lambda v: setattr(globals, 'PROTECTED_RANGE', v), step=1),
         ]
         self.controls.extend(self.display_sliders)
+        
         self.toggles = [
-            ToggleButton("Show Margin", globals.DEFAULT_SETTINGS["MARGIN_LINE"], lambda s: setattr(globals, 'MARGIN_LINE', s)),
-            ToggleButton("Show Visual Range", globals.DEFAULT_SETTINGS["DRAW_VISUAL_RANGE"], lambda s: setattr(globals, 'DRAW_VISUAL_RANGE', s)),
-            ToggleButton("Show Protected Range", globals.DEFAULT_SETTINGS["DRAW_PROTECTED_RANGE"], lambda s: setattr(globals, 'DRAW_PROTECTED_RANGE', s)),
+            ToggleButton("Mouse Influence", globals.MOUSE_MOTION, lambda s: setattr(globals, 'MOUSE_MOTION', s)),
+            ToggleButton("Show Margin", globals.MARGIN_LINE, lambda s: setattr(globals, 'MARGIN_LINE', s)),
+            ToggleButton("Show Visual Range", globals.DRAW_VISUAL_RANGE, lambda s: setattr(globals, 'DRAW_VISUAL_RANGE', s)),
+            ToggleButton("Show Protected Range", globals.DRAW_PROTECTED_RANGE, lambda s: setattr(globals, 'DRAW_PROTECTED_RANGE', s)),
         ]
+        for t in self.toggles: t.font_medium = self.font_small # Pass font to toggle buttons
         self.controls.extend(self.toggles)
+
         self.boid_count_slider = Slider("Boids Count", 10, 5000, self.staged_boid_count, lambda v: setattr(self, 'staged_boid_count', v), step=10)
         self.controls.append(self.boid_count_slider)
+        
         self.apply_boids_button = Button("Apply Count & Restart", self.post_restart_event, color=(60, 100, 140))
         self.controls.append(self.apply_boids_button)
+
         self.behavior_buttons = [
             Button("Turn", lambda: setattr(globals, 'BOUNDARY_BEHAVIOR', globals.BoundaryBehavior.BOUNDARY_TURN)),
             Button("Bounce", lambda: setattr(globals, 'BOUNDARY_BEHAVIOR', globals.BoundaryBehavior.BOUNDARY_BOUNCE)),
@@ -320,11 +303,12 @@ class UI:
                     key = key_map[control.label]
                     default_val = globals.DEFAULT_SETTINGS[key]
                     
-                    control.val = default_val / control.value_factor if control.value_factor != 1.0 else default_val
+                    control.val = default_val / control.value_factor if hasattr(control, 'value_factor') and control.value_factor != 1.0 else default_val
                     control.callback(control.val * control.value_factor)
             
             elif isinstance(control, ToggleButton):
                 key_map = {
+                    "Mouse Influence": "MOUSE_MOTION",
                     "Show Margin": "MARGIN_LINE", "Show Visual Range": "DRAW_VISUAL_RANGE", "Show Protected Range": "DRAW_PROTECTED_RANGE"
                 }
                 if control.label in key_map:
@@ -339,19 +323,23 @@ class UI:
              self.boid_count_slider.callback(self.staged_boid_count)
 
     def handle_event(self, event):
-        if not hasattr(event, 'pos') or not globals.SHOW_UI_PANEL:
+        if not globals.SHOW_UI_PANEL:
+            return False
+
+        if not hasattr(event, 'pos'):
             return False
 
         if not self.panel_rect.collidepoint(event.pos):
             return False
 
+        # Scroll handling
         if event.type == pygame.MOUSEBUTTONDOWN:
             max_scroll = self.content_height - self.panel_height
             if max_scroll > 0:
-                if event.button == 4:
+                if event.button == 4: # Scroll Up
                     self.scroll_offset_y = max(0, self.scroll_offset_y - self.scroll_speed)
                     return True
-                elif event.button == 5:
+                elif event.button == 5: # Scroll Down
                     self.scroll_offset_y = min(max_scroll, self.scroll_offset_y + self.scroll_speed)
                     return True
 
@@ -387,19 +375,17 @@ class UI:
 
     def draw(self):
         self.draw_fps()
-        #if not globals.SHOW_UI_PANEL:
-        #    return
-        #if self.current_x < self.screen.get_width():
-        self.content_surface.fill((20, 25, 35))
-        self._draw_all_controls_to_surface(self.content_surface)
+        if self.current_x < self.screen.get_width():
+            self.content_surface.fill((20, 25, 35))
+            self._draw_all_controls_to_surface(self.content_surface)
 
-        self.visible_panel.fill((20, 25, 35))
-        view_rect = pygame.Rect(0, self.scroll_offset_y, self.panel_width, self.panel_height)
-        self.visible_panel.blit(self.content_surface, (0, 0), view_rect)
+            self.visible_panel.fill((20, 25, 35))
+            view_rect = pygame.Rect(0, self.scroll_offset_y, self.panel_width, self.panel_height)
+            self.visible_panel.blit(self.content_surface, (0, 0), view_rect)
 
-        self._draw_scrollbar()
-        
-        self.screen.blit(self.visible_panel, self.panel_rect)
+            self._draw_scrollbar()
+            
+            self.screen.blit(self.visible_panel, self.panel_rect)
 
     def _draw_all_controls_to_surface(self, surface):
         x_margin = 20
@@ -437,7 +423,7 @@ class UI:
             btn.draw(surface)
         
         def draw_section(title, controls, start_y, spacing, font, layout_func=None):
-            header_surf = self.font_medium.render(title, True, (220, 220, 220))
+            header_surf = font.render(title, True, (220, 220, 220))
             surface.blit(header_surf, (x_margin, start_y))
             y = start_y + 30
             for control in controls:
@@ -478,9 +464,9 @@ class UI:
         num_toggle_rows = (len(self.toggles) + 1) // 2
         
         for i, toggle in enumerate(self.toggles):
-            row = i // 2
-            col = i % 2
-            toggle.layout(x_margin + col * 150, toggle_y + row * 40, 140, 30, self.font_small)
+            row = i % 2 
+            col = i // 2
+            toggle.layout(x_margin + col * 155, toggle_y + row * 40, 150, 30, self.font_small)
             toggle.draw(surface)
         y_cursor = toggle_y + num_toggle_rows * 40
 
@@ -502,14 +488,16 @@ class UI:
         return y_cursor
     
     def update(self):
-
         if globals.SHOW_UI_PANEL:
             self.target_x = self.visible_x
         else:
             self.target_x = self.hidden_x
             
-        self.current_x += (self.target_x - self.current_x) * self.animation_speed
+        # Animação de entrada/saída do painel
+        if abs(self.target_x - self.current_x) > 0.5:
+            self.current_x += (self.target_x - self.current_x) * self.animation_speed
+        else:
+            self.current_x = self.target_x
     
         self.panel_rect.x = int(self.current_x)
-        
         globals.UI_PANEL_RECT = self.panel_rect
