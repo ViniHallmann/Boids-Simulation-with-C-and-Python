@@ -47,7 +47,14 @@ PAUSED: bool = False
 BIRD_SIZE: int = 3
 BIRD_WIDTH:         int   = 1
 BIRD_RADIUS:        float = 2.5
-BIRD_COLOR:         tuple = (255, 255, 255)
+
+# --- BOIDS COLORS ---
+VERY_SLOW_COLOR:    tuple = (0, 255, 255)   # Ciano
+SLOW_COLOR:         tuple = (0, 0, 255)     # Azul
+MEDIUM_COLOR:       tuple = (0, 255, 0)     # Verde
+FAST_COLOR:         tuple = (255, 255, 0)   # Amarelo
+VERY_FAST_COLOR:    tuple = (255, 0, 0)     # Vermelho
+# ------------------------------------
 
 BACKGROUND_COLOR:   tuple = (10, 20, 40)
 FPS: int = 60
@@ -56,13 +63,11 @@ BLUR_TRANSPARENCY_VALUE: int = 15
 
 MOUSE_POS:          tuple = (0, 0)
 
-# --- MOUSE INTERACTION VARIABLES ---
 MOUSE_MOTION:       bool = DEFAULT_SETTINGS["MOUSE_MOTION"]
 MOUSE_FEAR:         bool = False
 MOUSE_ATTRACTION:   bool = False
 MOUSE_FEAR_RADIUS:          int = 100
 MOUSE_ATTRACTION_RADIUS:    int = 200
-#####
 
 # --- CRITICAL VARIABLES ---
 SCREEN_WIDTH:           int = 1300

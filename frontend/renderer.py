@@ -20,7 +20,7 @@ class Renderer:
             (self.bird_size * -0.5, self.bird_size * 0.5)]
         
         self.UI = UI(self.screen, clock)
-        
+
         self.toggle_button_font = pygame.font.Font(None, 50)
         self.show_panel_surf = self.toggle_button_font.render("<", True, (200, 200, 200))
         self.hide_panel_surf = self.toggle_button_font.render(">", True, (200, 200, 200))
@@ -28,6 +28,35 @@ class Renderer:
 
         pygame.display.set_caption("P: Simulação de Boids (C + Python)")
         print("P: Renderer inicializado.")
+
+    def _get_color_by_speed(self, speed: float) -> tuple:
+        """
+        Calcula a cor de um boid com base na sua velocidade, usando um gradiente de 5 cores.
+        """
+        colors = [
+            globals.VERY_SLOW_COLOR, 
+            globals.SLOW_COLOR, 
+            globals.MEDIUM_COLOR, 
+            globals.FAST_COLOR, 
+            globals.VERY_FAST_COLOR
+        ]
+        
+        if globals.MAX_SPEED == globals.MIN_SPEED:
+            return globals.VERY_SLOW_COLOR
+
+        normalized_speed = (speed - globals.MIN_SPEED) / (globals.MAX_SPEED - globals.MIN_SPEED)
+        normalized_speed = max(0.0, min(1.0, normalized_speed))
+        segment_index = int(normalized_speed / 0.25)
+        segment_index = min(segment_index, len(colors) - 2)
+        segment_normalized_speed = (normalized_speed - segment_index * 0.25) / 0.25
+        start_color = colors[segment_index]
+        end_color = colors[segment_index + 1]
+        r = start_color[0] + (end_color[0] - start_color[0]) * segment_normalized_speed
+        g = start_color[1] + (end_color[1] - start_color[1]) * segment_normalized_speed
+        b = start_color[2] + (end_color[2] - start_color[2]) * segment_normalized_speed
+        
+        return (int(r), int(g), int(b))
+
 
     def _draw_dashed_rect(self, surface, color, rect, width=1, dash_length=10):
         """
@@ -45,10 +74,12 @@ class Renderer:
 
     def draw_boid(self, entity):
         """
-        Desenha um boid na tela.
+        Desenha um boid na tela com cor baseada na velocidade.
         """
         vx, vy = entity.velocity.vx, entity.velocity.vy
         speed = math.sqrt(vx*vx + vy*vy)
+
+        color = self._get_color_by_speed(speed)
 
         if speed == 0:
             cos_a = 1.0
@@ -63,7 +94,7 @@ class Renderer:
             ry = (mx * sin_a) + (my * cos_a)
             rotated_points.append((rx + entity.position.x, ry + entity.position.y))
 
-        pygame.draw.polygon(self.screen, globals.BIRD_COLOR, rotated_points, 1)
+        pygame.draw.polygon(self.screen, color, rotated_points, 1)
 
     def draw_background(self):
         """
@@ -109,8 +140,8 @@ class Renderer:
         """
         Desenha tela composta por boids, margens e UI.
         """
-        entities            = simulation.boids.contents.entities
-        draw_boid_func      = self.draw_boid
+        entities = simulation.boids.contents.entities
+        draw_boid_func = self.draw_boid
 
         self.draw_background()
 
@@ -122,12 +153,16 @@ class Renderer:
 
         self.UI.update()
         self.UI.draw()
+
         panel_edge_x = self.UI.panel_rect.x
+        
         current_surf = self.hide_panel_surf if globals.SHOW_UI_PANEL else self.show_panel_surf
+        
         self.toggle_button_rect = current_surf.get_rect(
             centery=globals.SCREEN_HEIGHT // 2,
             right=panel_edge_x - 5
         )
+
         self.screen.blit(current_surf, self.toggle_button_rect)
 
         pygame.display.flip()
