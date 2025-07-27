@@ -30,8 +30,7 @@ class Slider:
     #att: posso fazer isso, mas acho que assim é mais escalável deixa cada componente gerenciando os próprios eventos.
     def handle_event(self, event):
         if not hasattr(event, 'pos'): return False
-
-        if self.min_val == self.max_val: return False
+        if self.min_val >= self.max_val: return False
 
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if self.rect.collidepoint(event.pos):
@@ -57,7 +56,7 @@ class Slider:
         display_val = self.val * self.value_factor
         value_text = f"{display_val:.3f}" if isinstance(display_val, float) and self.step is None else f"{int(display_val)}"
         value_surface = font.render(value_text, True, (255, 255, 255))
-        surface.blit(value_surface, (self.rect.right - value_surface.get_width(), self.rect.y - 18))
+        surface.blit(value_surface, (self.rect.right - value_surface.get_width(), self.rect.y - 18))       
         pygame.draw.rect(surface, (60, 60, 60), self.rect, border_radius=self.rect.height // 2)
 
         if self.max_val > self.min_val:
@@ -75,11 +74,13 @@ class Button:
         self.hover_color = tuple(min(c + 25, 255) for c in color)
         self.hovering = False
         self.rect = None
+        self.font = None
         self.font_surface = None
 
     def layout(self, x, y, width, height, font):
         self.rect = pygame.Rect(x, y, width, height)
-        self.font_surface = font.render(self.label, True, (255, 255, 255))
+        self.font = font
+        self.font_surface = self.font.render(self.label, True, (255, 255, 255))
 
     def handle_event(self, event):
         if not hasattr(event, 'pos'): return False
@@ -106,7 +107,6 @@ class ToggleButton(Button):
         super().__init__(label, lambda: self.toggle(), color=self.get_color())
         self.state_callback(self.state)
 
-
     def toggle(self):
         self.state = not self.state
         self.color = self.get_color()
@@ -117,7 +117,9 @@ class ToggleButton(Button):
         return (50, 150, 50) if self.state else (150, 50, 50)
 
     def draw(self, surface):
-        self.font_surface = self.font_medium.render(f"{self.label}: {'ON' if self.state else 'OFF'}", True, (255, 255, 255))
+        if self.font:
+            self.font_surface = self.font.render(self.label, True, (255, 255, 255))
+        
         super().draw(surface)
 
 
@@ -179,7 +181,6 @@ class UI:
         """Callback para o slider de Min Speed."""
         globals.MIN_SPEED = new_min_speed
         self.max_speed_slider.min_val = new_min_speed
-
         if self.max_speed_slider.val < new_min_speed:
             self.max_speed_slider.val = new_min_speed
             globals.MAX_SPEED = new_min_speed
@@ -249,7 +250,7 @@ class UI:
             "Max Speed", 1.0, 15.0, globals.DEFAULT_SETTINGS["MAX_SPEED"], 
             self._update_max_speed, step=0.5
         )
-
+        
         self._update_max_speed(self.max_speed_slider.val)
         self._update_min_speed(self.min_speed_slider.val)
 
@@ -275,7 +276,6 @@ class UI:
             ToggleButton("Show Visual Range", globals.DRAW_VISUAL_RANGE, lambda s: setattr(globals, 'DRAW_VISUAL_RANGE', s)),
             ToggleButton("Show Protected Range", globals.DRAW_PROTECTED_RANGE, lambda s: setattr(globals, 'DRAW_PROTECTED_RANGE', s)),
         ]
-        for t in self.toggles: t.font_medium = self.font_small
         self.controls.extend(self.toggles)
 
         self.boid_count_slider = Slider("Boids Count", 10, 5000, self.staged_boid_count, lambda v: setattr(self, 'staged_boid_count', v), step=10)
@@ -428,12 +428,13 @@ class UI:
 
     def _draw_all_controls_to_surface(self, surface):
         x_margin = 20
-        content_width = self.panel_width - x_margin - 15 
+        scrollbar_gutter = 20
+        content_width = self.panel_width - x_margin - scrollbar_gutter
         y_cursor = 20
         
         title_surf = self.font_large.render("Boids Simulation Controls", True, (100, 150, 255))
         surface.blit(title_surf, (x_margin, y_cursor))
-        y_cursor += 40
+        y_cursor += 50
 
         instructions = [
             "Move the mouse around or just watch them flock.",
@@ -443,28 +444,28 @@ class UI:
         
         for line in instructions:
             instruction_surf = self.font_small.render(line, True, (180, 180, 180))
-            text_rect = instruction_surf.get_rect(centerx=surface.get_rect().centerx)
-            surface.blit(instruction_surf, (text_rect.x, y_cursor))
+            surface.blit(instruction_surf, (x_margin, y_cursor))
             y_cursor += 20 
-        y_cursor += 10
+        y_cursor += 20
 
-        button_width = (content_width + 5) / 2 - 5
+        button_width = (content_width) / 2 - 5
         self.main_buttons[0].layout(x_margin, y_cursor, button_width, 30, self.font_medium)
         self.main_buttons[1].layout(x_margin + button_width + 10, y_cursor, button_width, 30, self.font_medium)
         y_cursor += 40
         self.main_buttons[2].layout(x_margin, y_cursor, button_width, 30, self.font_medium)
         self.main_buttons[3].layout(x_margin + button_width + 10, y_cursor, button_width, 30, self.font_medium)
         y_cursor += 45
-        self.main_buttons[4].layout(x_margin, y_cursor, content_width + 5, 35, self.font_medium)
+        self.main_buttons[4].layout(x_margin, y_cursor, content_width, 35, self.font_medium)
         y_cursor += 50
 
         for btn in self.main_buttons:
             btn.draw(surface)
         
         def draw_section(title, controls, start_y, spacing, font, layout_func=None):
+            start_y += 15
             header_surf = font.render(title, True, (220, 220, 220))
             surface.blit(header_surf, (x_margin, start_y))
-            y = start_y + 30
+            y = start_y + 40
             for control in controls:
                 if layout_func:
                     layout_func(control, y)
@@ -473,56 +474,56 @@ class UI:
             return y
         
         slider_layout = lambda ctrl, y: ctrl.layout(x_margin, y, content_width, 15, self.font_tiny)
-        y_cursor = draw_section("Behavior", self.sliders, y_cursor, 40, self.font_medium, slider_layout)
-        y_cursor += 10
-        y_cursor = draw_section("Display", self.display_sliders, y_cursor, 40, self.font_medium, slider_layout)
+        y_cursor = draw_section("Behavior", self.sliders, y_cursor, 45, self.font_medium, slider_layout)
+        y_cursor = draw_section("Display", self.display_sliders, y_cursor, 45, self.font_medium, slider_layout)
         
-        y_cursor += 10
+        y_cursor += 15
         header_surf = self.font_medium.render("Boundary Behavior", True, (220, 220, 220))
         surface.blit(header_surf, (x_margin, y_cursor))
-        y_cursor += 30
+        y_cursor += 40
         
-        button_width_bh = (content_width - 15) / 3
-        active_color = (60, 140, 180)
-
+        button_width_bh = (content_width) / 3 - 8
         for i, btn in enumerate(self.behavior_buttons):
             is_active = globals.BOUNDARY_BEHAVIOR.name.endswith(btn.label.upper())
-            original_color = active_color if is_active else (70, 70, 70)
+            original_color = (60, 140, 180) if is_active else (70, 70, 70)
             
             btn.color = original_color
             btn.hover_color = tuple(min(c + 25, 255) for c in btn.color)
 
             btn.layout(x_margin + i * (button_width_bh + 10), y_cursor, button_width_bh, 30, self.font_small)
             btn.draw(surface)
-        y_cursor += 40
+        y_cursor += 45
 
-        y_cursor += 10
+        y_cursor += 15
         header_surf = self.font_medium.render("Debug Toggles", True, (220, 220, 220))
         surface.blit(header_surf, (x_margin, y_cursor))
-        toggle_y = y_cursor + 30
-        num_toggle_rows = (len(self.toggles) + 1) // 2
+        toggle_y = y_cursor + 40
         
+        toggle_width = (content_width - 10) / 2
         for i, toggle in enumerate(self.toggles):
-            row = i % 2 
-            col = i // 2
-            toggle.layout(x_margin + col * 155, toggle_y + row * 40, 150, 30, self.font_small)
+            row = i // 2
+            col = i % 2
+            x_pos = x_margin + col * (toggle_width + 10)
+            y_pos = toggle_y + row * 40
+            toggle.layout(x_pos, y_pos, toggle_width, 30, self.font_small)
             toggle.draw(surface)
+        
+        num_toggle_rows = (len(self.toggles) + 1) // 2
         y_cursor = toggle_y + num_toggle_rows * 40
 
-        y_cursor += 10 
         y_cursor = draw_section("Population", [], y_cursor, 0, self.font_medium)
         
         boid_count_text = self.font_tiny.render(f"Current: {globals.NUM_BIRDS} | Target: {int(self.staged_boid_count)}", True, (200, 200, 200))
         surface.blit(boid_count_text, (x_margin, y_cursor))
-        y_cursor += 20
+        y_cursor += 45
         
         self.boid_count_slider.layout(x_margin, y_cursor, content_width, 20, self.font_tiny)
         self.boid_count_slider.draw(surface, self.font_tiny)
-        y_cursor += 30
+        y_cursor += 35
 
-        self.apply_boids_button.layout(x_margin, y_cursor, content_width + 5, 35, self.font_medium)
+        self.apply_boids_button.layout(x_margin, y_cursor, content_width, 35, self.font_medium)
         self.apply_boids_button.draw(surface)
-        y_cursor += 45
+        y_cursor += 50
         
         return y_cursor
     
