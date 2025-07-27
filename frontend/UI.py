@@ -30,6 +30,9 @@ class Slider:
     #att: posso fazer isso, mas acho que assim é mais escalável deixa cada componente gerenciando os próprios eventos.
     def handle_event(self, event):
         if not hasattr(event, 'pos'): return False
+
+        if self.min_val == self.max_val: return False
+
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if self.rect.collidepoint(event.pos):
                 self.dragging = True
@@ -56,8 +59,13 @@ class Slider:
         value_surface = font.render(value_text, True, (255, 255, 255))
         surface.blit(value_surface, (self.rect.right - value_surface.get_width(), self.rect.y - 18))
         pygame.draw.rect(surface, (60, 60, 60), self.rect, border_radius=self.rect.height // 2)
-        handle_x = self.rect.x + (self.val - self.min_val) / (self.max_val - self.min_val) * self.rect.width
-        pygame.draw.circle(surface, (100, 150, 255), (int(handle_x), self.rect.centery), self.handle_radius + 1)
+
+        if self.max_val > self.min_val:
+            handle_x = self.rect.x + (self.val - self.min_val) / (self.max_val - self.min_val) * self.rect.width
+            pygame.draw.circle(surface, (100, 150, 255), (int(handle_x), self.rect.centery), self.handle_radius + 1)
+        else:
+            pygame.draw.circle(surface, (100, 150, 255), (self.rect.x, self.rect.centery), self.handle_radius + 1)
+
 
 class Button:
     def __init__(self, label, callback, color=(70, 70, 70)):
@@ -157,6 +165,25 @@ class UI:
         self.init_controls()
         print("P: UI inicializada com sucesso (versão com Import/Export).")
 
+    # Corrigido: Slider do min_speed não pode ficar acima do max_speed
+    def _update_max_speed(self, new_max_speed):
+        """Callback para o slider de Max Speed."""
+        globals.MAX_SPEED = new_max_speed
+        self.min_speed_slider.max_val = new_max_speed
+
+        if self.min_speed_slider.val > new_max_speed:
+            self.min_speed_slider.val = new_max_speed
+            globals.MIN_SPEED = new_max_speed
+
+    def _update_min_speed(self, new_min_speed):
+        """Callback para o slider de Min Speed."""
+        globals.MIN_SPEED = new_min_speed
+        self.max_speed_slider.min_val = new_min_speed
+
+        if self.max_speed_slider.val < new_min_speed:
+            self.max_speed_slider.val = new_min_speed
+            globals.MAX_SPEED = new_min_speed
+
     def _export_settings(self):
         """Coleta as configurações atuais e as salva em um arquivo JSON."""
         print(f"P: Exportando configurações para {self.settings_filepath}...")
@@ -214,15 +241,28 @@ class UI:
 
     def init_controls(self):
         self.controls = []
+        self.min_speed_slider = Slider(
+            "Min Speed", 1.0, 15.0, globals.DEFAULT_SETTINGS["MIN_SPEED"], 
+            self._update_min_speed, step=0.5
+        )
+        self.max_speed_slider = Slider(
+            "Max Speed", 1.0, 15.0, globals.DEFAULT_SETTINGS["MAX_SPEED"], 
+            self._update_max_speed, step=0.5
+        )
+
+        self._update_max_speed(self.max_speed_slider.val)
+        self._update_min_speed(self.min_speed_slider.val)
+
         self.sliders = [
             Slider("Turn Factor", 0.0, 1.0, globals.DEFAULT_SETTINGS["TURN_FACTOR"], lambda v: setattr(globals, 'TURN_FACTOR', v)),
             Slider("Cohesion", 0.0, 150.0, globals.DEFAULT_SETTINGS["CENTERING_FACTOR"] * 4000, lambda v: setattr(globals, 'CENTERING_FACTOR', v), value_factor=0.00025),
             Slider("Separation", 0.0, 3.0, globals.DEFAULT_SETTINGS["AVOID_FACTOR"] * 10, lambda v: setattr(globals, 'AVOID_FACTOR', v), value_factor=0.1),
             Slider("Alignment", 0.0, 8.0, globals.DEFAULT_SETTINGS["MATCHING_FACTOR"] * 20, lambda v: setattr(globals, 'MATCHING_FACTOR', v), value_factor=0.05),
-            Slider("Min Speed", 1.0, 10.0, globals.DEFAULT_SETTINGS["MIN_SPEED"], lambda v: setattr(globals, 'MIN_SPEED', v), step=0.5),
-            Slider("Max Speed", 1.0, 15.0, globals.DEFAULT_SETTINGS["MAX_SPEED"], lambda v: setattr(globals, 'MAX_SPEED', v), step=0.5),
+            self.min_speed_slider, # Adiciona o slider de min speed à lista
+            self.max_speed_slider  # Adiciona o slider de max speed à lista
         ]
         self.controls.extend(self.sliders)
+        
         self.display_sliders = [
             Slider("Visual Range", 10.0, 200.0, globals.DEFAULT_SETTINGS["VISUAL_RANGE"], lambda v: setattr(globals, 'VISUAL_RANGE', v), step=1),
             Slider("Protected Range", 5.0, 100.0, globals.DEFAULT_SETTINGS["PROTECTED_RANGE"], lambda v: setattr(globals, 'PROTECTED_RANGE', v), step=1),
@@ -235,7 +275,7 @@ class UI:
             ToggleButton("Show Visual Range", globals.DRAW_VISUAL_RANGE, lambda s: setattr(globals, 'DRAW_VISUAL_RANGE', s)),
             ToggleButton("Show Protected Range", globals.DRAW_PROTECTED_RANGE, lambda s: setattr(globals, 'DRAW_PROTECTED_RANGE', s)),
         ]
-        for t in self.toggles: t.font_medium = self.font_small # Pass font to toggle buttons
+        for t in self.toggles: t.font_medium = self.font_small
         self.controls.extend(self.toggles)
 
         self.boid_count_slider = Slider("Boids Count", 10, 5000, self.staged_boid_count, lambda v: setattr(self, 'staged_boid_count', v), step=10)
@@ -303,7 +343,6 @@ class UI:
                 if control.label in key_map:
                     key = key_map[control.label]
                     default_val = globals.DEFAULT_SETTINGS[key]
-                    
                     control.val = default_val / control.value_factor if hasattr(control, 'value_factor') and control.value_factor != 1.0 else default_val
                     control.callback(control.val * control.value_factor)
             
@@ -333,14 +372,13 @@ class UI:
         if not self.panel_rect.collidepoint(event.pos):
             return False
 
-        # Scroll handling
         if event.type == pygame.MOUSEBUTTONDOWN:
             max_scroll = self.content_height - self.panel_height
             if max_scroll > 0:
-                if event.button == 4: # Scroll Up
+                if event.button == 4:
                     self.scroll_offset_y = max(0, self.scroll_offset_y - self.scroll_speed)
                     return True
-                elif event.button == 5: # Scroll Down
+                elif event.button == 5:
                     self.scroll_offset_y = min(max_scroll, self.scroll_offset_y + self.scroll_speed)
                     return True
 
@@ -411,13 +449,13 @@ class UI:
         y_cursor += 10
 
         button_width = (content_width + 5) / 2 - 5
-        self.main_buttons[0].layout(x_margin, y_cursor, button_width, 30, self.font_medium) # Pause
-        self.main_buttons[1].layout(x_margin + button_width + 10, y_cursor, button_width, 30, self.font_medium) # Reset
+        self.main_buttons[0].layout(x_margin, y_cursor, button_width, 30, self.font_medium)
+        self.main_buttons[1].layout(x_margin + button_width + 10, y_cursor, button_width, 30, self.font_medium)
         y_cursor += 40
-        self.main_buttons[2].layout(x_margin, y_cursor, button_width, 30, self.font_medium) # Export
-        self.main_buttons[3].layout(x_margin + button_width + 10, y_cursor, button_width, 30, self.font_medium) # Import
+        self.main_buttons[2].layout(x_margin, y_cursor, button_width, 30, self.font_medium)
+        self.main_buttons[3].layout(x_margin + button_width + 10, y_cursor, button_width, 30, self.font_medium)
         y_cursor += 45
-        self.main_buttons[4].layout(x_margin, y_cursor, content_width + 5, 35, self.font_medium) # Restart
+        self.main_buttons[4].layout(x_margin, y_cursor, content_width + 5, 35, self.font_medium)
         y_cursor += 50
 
         for btn in self.main_buttons:
