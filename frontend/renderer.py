@@ -77,16 +77,24 @@ class Renderer:
         Desenha um boid na tela com cor baseada na velocidade.
         """
         vx, vy = entity.velocity.vx, entity.velocity.vy
-        speed = math.sqrt(vx*vx + vy*vy)
+        
+        # Se tiver com as cores desligadas, evita o calculo desnecessário para pesar menos
+        if globals.DYNAMIC_COLOR_ENABLED:
+            # Só calcula a velocidade e a cor se a função estiver ativa
+            speed = math.sqrt(vx*vx + vy*vy)
+            color = self._get_color_by_speed(speed)
+        else:
+            speed = 0
+            color = globals.STATIC_BOID_COLOR
+        
+        velocity_magnitude = math.sqrt(vx*vx + vy*vy)
 
-        color = self._get_color_by_speed(speed)
-
-        if speed == 0:
+        if velocity_magnitude == 0:
             cos_a = 1.0
             sin_a = 0.0
         else:
-            cos_a = vx / speed
-            sin_a = vy / speed
+            cos_a = vx / velocity_magnitude
+            sin_a = vy / velocity_magnitude
 
         rotated_points = []
         for mx, my in self.model_triangle:

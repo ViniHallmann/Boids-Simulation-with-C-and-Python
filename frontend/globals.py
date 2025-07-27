@@ -19,6 +19,7 @@ DEFAULT_SETTINGS = {
     "DRAW_PROTECTED_RANGE": False,
     "DRAW_VISUAL_RANGE": False,
     "MOUSE_MOTION": True,
+    "DYNAMIC_COLOR_ENABLED": False,
 }
 
 # --- NON-CRITICAL VARIABLES ---
@@ -49,6 +50,8 @@ BIRD_WIDTH:         int   = 1
 BIRD_RADIUS:        float = 2.5
 
 # --- BOIDS COLORS ---
+DYNAMIC_COLOR_ENABLED: bool = DEFAULT_SETTINGS["DYNAMIC_COLOR_ENABLED"]
+STATIC_BOID_COLOR:  tuple = (255, 255, 255) # Cor branca padrão
 VERY_SLOW_COLOR:    tuple = (0, 255, 255)   # Ciano
 SLOW_COLOR:         tuple = (0, 0, 255)     # Azul
 MEDIUM_COLOR:       tuple = (0, 255, 0)     # Verde

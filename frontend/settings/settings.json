@@ -1,15 +1,16 @@
 {
-    "Turn Factor": 0.9894736842105263,
-    "Cohesion": 0.03539473684210527,
-    "Separation": 0.002105263157894737,
-    "Alignment": 0.3929824561403509,
-    "Min Speed": 5.0,
-    "Max Speed": 9.0,
-    "Visual Range": 118.0,
+    "Turn Factor": 0.2,
+    "Cohesion": 0.0005,
+    "Separation": 0.1,
+    "Alignment": 0.05,
+    "Min Speed": 3.0,
+    "Max Speed": 6.0,
+    "Visual Range": 45.0,
     "Protected Range": 6.0,
     "Mouse Influence": true,
     "Show Margin": true,
     "Show Visual Range": false,
     "Show Protected Range": false,
-    "Boids Count": 1180.0
+    "Dynamic Colors": true,
+    "Boids Count": 1500
 }

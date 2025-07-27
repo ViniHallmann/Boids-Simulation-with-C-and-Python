@@ -275,6 +275,7 @@ class UI:
             ToggleButton("Show Margin", globals.MARGIN_LINE, lambda s: setattr(globals, 'MARGIN_LINE', s)),
             ToggleButton("Show Visual Range", globals.DRAW_VISUAL_RANGE, lambda s: setattr(globals, 'DRAW_VISUAL_RANGE', s)),
             ToggleButton("Show Protected Range", globals.DRAW_PROTECTED_RANGE, lambda s: setattr(globals, 'DRAW_PROTECTED_RANGE', s)),
+            ToggleButton("Dynamic Colors", globals.DYNAMIC_COLOR_ENABLED, lambda s: setattr(globals, 'DYNAMIC_COLOR_ENABLED', s)),
         ]
         self.controls.extend(self.toggles)
 
@@ -348,8 +349,9 @@ class UI:
             
             elif isinstance(control, ToggleButton):
                 key_map = {
-                    "Mouse Influence": "MOUSE_MOTION",
-                    "Show Margin": "MARGIN_LINE", "Show Visual Range": "DRAW_VISUAL_RANGE", "Show Protected Range": "DRAW_PROTECTED_RANGE"
+                    "Mouse Influence": "MOUSE_MOTION", "Show Margin": "MARGIN_LINE", 
+                    "Show Visual Range": "DRAW_VISUAL_RANGE", "Show Protected Range": "DRAW_PROTECTED_RANGE",
+                    "Dynamic Colors": "DYNAMIC_COLOR_ENABLED"
                 }
                 if control.label in key_map:
                     key = key_map[control.label]
