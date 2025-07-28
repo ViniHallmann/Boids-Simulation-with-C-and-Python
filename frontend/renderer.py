@@ -21,11 +21,6 @@ class Renderer:
         
         self.UI = UI(self.screen, clock)
 
-        self.toggle_button_font = pygame.font.Font(None, 50)
-        self.show_panel_surf = self.toggle_button_font.render("<", True, (200, 200, 200))
-        self.hide_panel_surf = self.toggle_button_font.render(">", True, (200, 200, 200))
-        self.toggle_button_rect = self.show_panel_surf.get_rect()
-
         pygame.display.set_caption("P: Simulação de Boids (C + Python)")
         print("P: Renderer inicializado.")
 
@@ -56,7 +51,28 @@ class Renderer:
         b = start_color[2] + (end_color[2] - start_color[2]) * segment_normalized_speed
         
         return (int(r), int(g), int(b))
+    
+    def _get_triangle_points(self, entity):
+        """
+        Obtém os pontos do triângulo que representa o boid.
+        """
+        vx, vy = entity.velocity.vx, entity.velocity.vy
+        
+        if vx == 0 and vy == 0:
+            cos_a = 1.0
+            sin_a = 0.0
+        else:
+            magnitude = math.sqrt(vx * vx + vy * vy)
+            cos_a = vx / magnitude
+            sin_a = vy / magnitude
 
+        rotated_points = []
+        for mx, my in self.model_triangle:
+            rx = (mx * cos_a) - (my * sin_a)
+            ry = (mx * sin_a) + (my * cos_a)
+            rotated_points.append((rx + entity.position.x, ry + entity.position.y))
+        
+        return rotated_points
 
     def _draw_dashed_rect(self, surface, color, rect, width=1, dash_length=10):
         """
@@ -78,29 +94,14 @@ class Renderer:
         """
         vx, vy = entity.velocity.vx, entity.velocity.vy
         
-        # Se tiver com as cores desligadas, evita o calculo desnecessário para pesar menos
         if globals.DYNAMIC_COLOR_ENABLED:
-            # Só calcula a velocidade e a cor se a função estiver ativa
             speed = math.sqrt(vx*vx + vy*vy)
             color = self._get_color_by_speed(speed)
         else:
             speed = 0
             color = globals.STATIC_BOID_COLOR
         
-        velocity_magnitude = math.sqrt(vx*vx + vy*vy)
-
-        if velocity_magnitude == 0:
-            cos_a = 1.0
-            sin_a = 0.0
-        else:
-            cos_a = vx / velocity_magnitude
-            sin_a = vy / velocity_magnitude
-
-        rotated_points = []
-        for mx, my in self.model_triangle:
-            rx = (mx * cos_a) - (my * sin_a)
-            ry = (mx * sin_a) + (my * cos_a)
-            rotated_points.append((rx + entity.position.x, ry + entity.position.y))
+        rotated_points = self._get_triangle_points(entity)
 
         pygame.draw.polygon(self.screen, color, rotated_points, 1)
 
@@ -162,16 +163,17 @@ class Renderer:
         self.UI.update()
         self.UI.draw()
 
-        panel_edge_x = self.UI.panel_rect.x
+        #RESPONSABILIDADE DA UI ESSE BOTAO
+        # panel_edge_x = self.UI.panel_rect.x
         
-        current_surf = self.hide_panel_surf if globals.SHOW_UI_PANEL else self.show_panel_surf
+        # current_surf = self.hide_panel_surf if globals.SHOW_UI_PANEL else self.show_panel_surf
         
-        self.toggle_button_rect = current_surf.get_rect(
-            centery=globals.SCREEN_HEIGHT // 2,
-            right=panel_edge_x - 5
-        )
+        # self.toggle_button_rect = current_surf.get_rect(
+        #     centery=globals.SCREEN_HEIGHT // 2,
+        #     right=panel_edge_x - 5
+        # )
 
-        self.screen.blit(current_surf, self.toggle_button_rect)
+        # self.screen.blit(current_surf, self.toggle_button_rect)
 
         pygame.display.flip()
 
