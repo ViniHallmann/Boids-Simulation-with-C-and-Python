@@ -19,11 +19,6 @@ class InputHandler:
             if event.type == pygame.MOUSEBUTTONUP:
                 self._mouse_button_up(event)
 
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if self.app.renderer.toggle_button_rect.collidepoint(event.pos):
-                    globals.SHOW_UI_PANEL = not globals.SHOW_UI_PANEL
-                    continue
-
             ui_handled = self.app.renderer.UI.handle_event(event)
             
             if not ui_handled:
