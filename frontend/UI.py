@@ -8,6 +8,7 @@ import os
 
 class Slider:
     def __init__(self, label, min_val, max_val, initial_val, callback, value_factor=1.0, step=None):
+        self.last_value_text = ""
         self.label = label
         self.min_val = min_val
         self.max_val = max_val
@@ -15,10 +16,12 @@ class Slider:
         self.callback = callback
         self.value_factor = value_factor
         self.step = step
-        self.dragging = False
-        self.rect = None
-        self.handle_radius = 0
-        self.font_surface = None
+
+        self.handle_radius  = 0
+        self.dragging       = False
+        self.rect           = None
+        self.font_surface   = None
+        self.value_surface  = None
 
     def layout(self, x, y, width, height, font):
         self.rect = pygame.Rect(x, y, width, height)
@@ -54,9 +57,14 @@ class Slider:
     def draw(self, surface, font):
         surface.blit(self.font_surface, (self.rect.x, self.rect.y - 18))
         display_val = self.val * self.value_factor
-        value_text = f"{display_val:.3f}" if isinstance(display_val, float) and self.step is None else f"{int(display_val)}"
-        value_surface = font.render(value_text, True, (255, 255, 255))
-        surface.blit(value_surface, (self.rect.right - value_surface.get_width(), self.rect.y - 18))       
+        current_value_text = f"{display_val:.3f}" if isinstance(display_val, float) and self.step is None else f"{int(display_val)}"
+        if current_value_text != self.last_value_text:
+            self.last_value_text = current_value_text
+            self.value_surface = font.render(current_value_text, True, (255, 255, 255))
+
+        if self.value_surface:
+            surface.blit(self.value_surface, (self.rect.right - self.value_surface.get_width(), self.rect.y - 18))
+        
         pygame.draw.rect(surface, (60, 60, 60), self.rect, border_radius=self.rect.height // 2)
 
         if self.max_val > self.min_val:
@@ -131,20 +139,20 @@ class UI:
         self.clock = clock
         self.controls = []
         
-        self.font_large = pygame.font.Font(None, 32)
+        self.font_large  = pygame.font.Font(None, 32)
         self.font_medium = pygame.font.Font(None, 24)
-        self.font_small = pygame.font.Font(None, 18)
-        self.font_tiny = pygame.font.Font(None, 16)
+        self.font_small  = pygame.font.Font(None, 18)
+        self.font_tiny   = pygame.font.Font(None, 16)
 
         self.last_fps_text = ""
         self.fps_surface = None
 
-        self.panel_width = 320
+        self.panel_width  = 320
         self.panel_height = screen.get_height()
 
         self.visible_x = self.screen.get_width() - self.panel_width
-        self.hidden_x = self.screen.get_width()
-        self.target_x = self.hidden_x
+        self.hidden_x  = self.screen.get_width()
+        self.target_x  = self.hidden_x
         self.current_x = float(self.hidden_x)
 
         self.animation_speed = 0.1 
@@ -159,15 +167,24 @@ class UI:
         self.scroll_offset_y = 0
         self.scroll_speed = 40
 
+        self.header_surfaces = {}
+
+        self.toggle_button_font = pygame.font.Font(None, 50)
+        self.show_panel_surf = self.toggle_button_font.render("<", True, (200, 200, 200))
+        self.hide_panel_surf = self.toggle_button_font.render(">", True, (200, 200, 200))
+        self.toggle_button_rect = self.show_panel_surf.get_rect() 
+
         self.staged_boid_count = globals.NUM_BIRDS
         
         self.settings_dir = "settings"
         self.settings_filepath = os.path.join(self.settings_dir, "settings.json")
 
         self.init_controls()
+        self.content_height = self._layout_controls()
+        self.content_surface = pygame.Surface((self.panel_width, self.content_height))
+
         print("P: UI inicializada com sucesso (versão com Import/Export).")
 
-    # Corrigido: Slider do min_speed não pode ficar acima do max_speed
     def _update_max_speed(self, new_max_speed):
         """Callback para o slider de Max Speed."""
         globals.MAX_SPEED = new_max_speed
@@ -240,6 +257,95 @@ class UI:
         except Exception as e:
             print(f"ERRO: Falha ao importar configurações: {e}")
 
+    def _layout_controls(self):
+        """
+        Calcula a posição de todos os controles e textos estáticos uma única vez.
+        Retorna a altura total do conteúdo.
+        """
+        x_margin = 20
+        scrollbar_gutter = 20
+        content_width = self.panel_width - x_margin - scrollbar_gutter
+        y_cursor = 20
+        
+        # Pré-renderiza e armazena posições de textos estáticos
+        self.static_surfaces = []
+        title_surf = self.font_large.render("Boids Simulation Controls", True, (100, 150, 255))
+        self.static_surfaces.append((title_surf, (x_margin, y_cursor)))
+        y_cursor += 50
+
+        instructions = [
+            "Move the mouse around or just watch them flock.",
+            "Left-click to toggle fear mode on/off.",
+            "Press Spacebar or the Pause button to pause."
+        ]
+        for line in instructions:
+            instruction_surf = self.font_small.render(line, True, (180, 180, 180))
+            self.static_surfaces.append((instruction_surf, (x_margin, y_cursor)))
+            y_cursor += 20 
+        y_cursor += 20
+
+        # Layout dos botões principais
+        button_width = (content_width) / 2 - 5
+        self.main_buttons[0].layout(x_margin, y_cursor, button_width, 30, self.font_medium)
+        self.main_buttons[1].layout(x_margin + button_width + 10, y_cursor, button_width, 30, self.font_medium)
+        y_cursor += 40
+        self.main_buttons[2].layout(x_margin, y_cursor, button_width, 30, self.font_medium)
+        self.main_buttons[3].layout(x_margin + button_width + 10, y_cursor, button_width, 30, self.font_medium)
+        y_cursor += 45
+        self.main_buttons[4].layout(x_margin, y_cursor, content_width, 35, self.font_medium)
+        y_cursor += 50
+
+        # Layout das seções
+        def layout_section(title, controls, start_y, spacing, font, layout_func):
+            start_y += 15
+            header_surf = font.render(title, True, (220, 220, 220))
+            self.static_surfaces.append((header_surf, (x_margin, start_y)))
+            y = start_y + 40
+            for control in controls:
+                layout_func(control, y)
+                y += spacing
+            return y
+        
+        slider_layout = lambda ctrl, y: ctrl.layout(x_margin, y, content_width, 15, self.font_tiny)
+        y_cursor = layout_section("Behavior", self.sliders, y_cursor, 45, self.font_medium, slider_layout)
+        y_cursor = layout_section("Display", self.display_sliders, y_cursor, 45, self.font_medium, slider_layout)
+        
+        y_cursor += 15
+        header_surf = self.font_medium.render("Boundary Behavior", True, (220, 220, 220))
+        self.static_surfaces.append((header_surf, (x_margin, y_cursor)))
+        y_cursor += 40
+        
+        button_width_bh = (content_width) / 3 - 8
+        for i, btn in enumerate(self.behavior_buttons):
+            btn.layout(x_margin + i * (button_width_bh + 10), y_cursor, button_width_bh, 30, self.font_small)
+        y_cursor += 45
+
+        y_cursor += 15
+        header_surf = self.font_medium.render("Debug Toggles", True, (220, 220, 220))
+        self.static_surfaces.append((header_surf, (x_margin, y_cursor)))
+        toggle_y = y_cursor + 40
+        
+        toggle_width = (content_width - 10) / 2
+        for i, toggle in enumerate(self.toggles):
+            row, col = divmod(i, 2)
+            x_pos = x_margin + col * (toggle_width + 10)
+            y_pos = toggle_y + row * 40
+            toggle.layout(x_pos, y_pos, toggle_width, 30, self.font_small)
+        num_toggle_rows = (len(self.toggles) + 1) // 2
+        y_cursor = toggle_y + num_toggle_rows * 40
+
+        y_cursor += 15
+        header_surf = self.font_medium.render("Population", True, (220, 220, 220))
+        self.static_surfaces.append((header_surf, (x_margin, y_cursor)))
+        y_cursor += 25 
+        
+        self.boid_count_slider.layout(x_margin, y_cursor + 20, content_width, 20, self.font_tiny)
+        y_cursor += 35 + 20
+        self.apply_boids_button.layout(x_margin, y_cursor, content_width, 35, self.font_medium)
+        y_cursor += 50
+        
+        return y_cursor
+
     def init_controls(self):
         self.controls = []
         self.min_speed_slider = Slider(
@@ -302,10 +408,6 @@ class UI:
         self.controls.extend(self.main_buttons)
         self.pause_button = self.main_buttons[0]
         self.update_pause_button_state()
-        
-        temp_surface = pygame.Surface((self.panel_width, 1)) 
-        self.content_height = self._draw_all_controls_to_surface(temp_surface)
-        self.content_surface = pygame.Surface((self.panel_width, self.content_height))
 
     def _draw_scrollbar(self):
         if self.content_height <= self.panel_height:
@@ -365,6 +467,10 @@ class UI:
              self.boid_count_slider.callback(self.staged_boid_count)
 
     def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if self.toggle_button_rect.collidepoint(event.pos):
+                globals.SHOW_UI_PANEL = not globals.SHOW_UI_PANEL
+                return True
         if not globals.SHOW_UI_PANEL:
             return False
 
@@ -414,120 +520,37 @@ class UI:
         if self.fps_surface:
             self.screen.blit(self.fps_surface, (10, 10))
 
-    def draw(self):
-        self.draw_fps()
-        if self.current_x < self.screen.get_width():
-            self.content_surface.fill((20, 25, 35))
-            self._draw_all_controls_to_surface(self.content_surface)
-
-            self.visible_panel.fill((20, 25, 35))
-            view_rect = pygame.Rect(0, self.scroll_offset_y, self.panel_width, self.panel_height)
-            self.visible_panel.blit(self.content_surface, (0, 0), view_rect)
-
-            self._draw_scrollbar()
-            
-            self.screen.blit(self.visible_panel, self.panel_rect)
+    def _draw_toggle_button(self):
+        """Desenha o botão de mostrar/esconder o painel."""
+        panel_edge_x = self.panel_rect.x
+        
+        current_surf = self.hide_panel_surf if globals.SHOW_UI_PANEL else self.show_panel_surf
+        
+        self.toggle_button_rect = current_surf.get_rect(
+            centery=self.screen.get_height() // 2,
+            right=panel_edge_x - 10
+        )
+        
+        self.screen.blit(current_surf, self.toggle_button_rect)
 
     def _draw_all_controls_to_surface(self, surface):
-        x_margin = 20
-        scrollbar_gutter = 20
-        content_width = self.panel_width - x_margin - scrollbar_gutter
-        y_cursor = 20
-        
-        title_surf = self.font_large.render("Boids Simulation Controls", True, (100, 150, 255))
-        surface.blit(title_surf, (x_margin, y_cursor))
-        y_cursor += 50
+        """
+        Apenas desenha os controles e textos. O layout já foi calculado.
+        """
+        #DESENHO TEXTO ESTATICOS
+        for surf, pos in self.static_surfaces:
+            surface.blit(surf, pos)
 
-        instructions = [
-            "Move the mouse around or just watch them flock.",
-            "Left-click to toggle fear mode on/off.",
-            "Press Spacebar or the Pause button to pause."
-        ]
-        
-        for line in instructions:
-            instruction_surf = self.font_small.render(line, True, (180, 180, 180))
-            surface.blit(instruction_surf, (x_margin, y_cursor))
-            y_cursor += 20 
-        y_cursor += 20
-
-        button_width = (content_width) / 2 - 5
-        self.main_buttons[0].layout(x_margin, y_cursor, button_width, 30, self.font_medium)
-        self.main_buttons[1].layout(x_margin + button_width + 10, y_cursor, button_width, 30, self.font_medium)
-        y_cursor += 40
-        self.main_buttons[2].layout(x_margin, y_cursor, button_width, 30, self.font_medium)
-        self.main_buttons[3].layout(x_margin + button_width + 10, y_cursor, button_width, 30, self.font_medium)
-        y_cursor += 45
-        self.main_buttons[4].layout(x_margin, y_cursor, content_width, 35, self.font_medium)
-        y_cursor += 50
-
-        for btn in self.main_buttons:
-            btn.draw(surface)
-        
-        def draw_section(title, controls, start_y, spacing, font, layout_func=None):
-            start_y += 15
-            header_surf = font.render(title, True, (220, 220, 220))
-            surface.blit(header_surf, (x_margin, start_y))
-            y = start_y + 40
-            for control in controls:
-                if layout_func:
-                    layout_func(control, y)
+        #DESENHO COMPONENTES
+        for control in self.controls:
+            if isinstance(control, Slider):
                 control.draw(surface, self.font_tiny)
-                y += spacing
-            return y
+            elif isinstance(control, Button):
+                control.draw(surface)
         
-        slider_layout = lambda ctrl, y: ctrl.layout(x_margin, y, content_width, 15, self.font_tiny)
-        y_cursor = draw_section("Behavior", self.sliders, y_cursor, 45, self.font_medium, slider_layout)
-        y_cursor = draw_section("Display", self.display_sliders, y_cursor, 45, self.font_medium, slider_layout)
-        
-        y_cursor += 15
-        header_surf = self.font_medium.render("Boundary Behavior", True, (220, 220, 220))
-        surface.blit(header_surf, (x_margin, y_cursor))
-        y_cursor += 40
-        
-        button_width_bh = (content_width) / 3 - 8
-        for i, btn in enumerate(self.behavior_buttons):
-            is_active = globals.BOUNDARY_BEHAVIOR.name.endswith(btn.label.upper())
-            original_color = (60, 140, 180) if is_active else (70, 70, 70)
-            
-            btn.color = original_color
-            btn.hover_color = tuple(min(c + 25, 255) for c in btn.color)
-
-            btn.layout(x_margin + i * (button_width_bh + 10), y_cursor, button_width_bh, 30, self.font_small)
-            btn.draw(surface)
-        y_cursor += 45
-
-        y_cursor += 15
-        header_surf = self.font_medium.render("Debug Toggles", True, (220, 220, 220))
-        surface.blit(header_surf, (x_margin, y_cursor))
-        toggle_y = y_cursor + 40
-        
-        toggle_width = (content_width - 10) / 2
-        for i, toggle in enumerate(self.toggles):
-            row = i // 2
-            col = i % 2
-            x_pos = x_margin + col * (toggle_width + 10)
-            y_pos = toggle_y + row * 40
-            toggle.layout(x_pos, y_pos, toggle_width, 30, self.font_small)
-            toggle.draw(surface)
-        
-        num_toggle_rows = (len(self.toggles) + 1) // 2
-        y_cursor = toggle_y + num_toggle_rows * 40
-
-        y_cursor = draw_section("Population", [], y_cursor, 0, self.font_medium)
-        
+        # Desenha texto dinâmico
         boid_count_text = self.font_tiny.render(f"Current: {globals.NUM_BIRDS} | Target: {int(self.staged_boid_count)}", True, (200, 200, 200))
-        surface.blit(boid_count_text, (x_margin, y_cursor))
-        y_cursor += 45
-        
-        self.boid_count_slider.layout(x_margin, y_cursor, content_width, 20, self.font_tiny)
-        self.boid_count_slider.draw(surface, self.font_tiny)
-        y_cursor += 35
-
-        self.apply_boids_button.layout(x_margin, y_cursor, content_width, 35, self.font_medium)
-        self.apply_boids_button.draw(surface)
-        y_cursor += 50
-        
-        return y_cursor
+        surface.blit(boid_count_text, (self.boid_count_slider.rect.x, self.boid_count_slider.rect.y - 25))
     
     def update(self):
         if globals.SHOW_UI_PANEL:
@@ -542,3 +565,18 @@ class UI:
     
         self.panel_rect.x = int(self.current_x)
         globals.UI_PANEL_RECT = self.panel_rect
+    
+    def draw(self):
+        self.draw_fps()
+        self._draw_toggle_button()
+        if self.current_x < self.screen.get_width():
+            self.content_surface.fill((20, 25, 35))
+            self._draw_all_controls_to_surface(self.content_surface)
+
+            self.visible_panel.fill((20, 25, 35))
+            view_rect = pygame.Rect(0, self.scroll_offset_y, self.panel_width, self.panel_height)
+            self.visible_panel.blit(self.content_surface, (0, 0), view_rect)
+
+            self._draw_scrollbar()
+            
+            self.screen.blit(self.visible_panel, self.panel_rect)
