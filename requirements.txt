@@ -1,18 +1,13 @@
-# Requirements for CLP Boids Simulation Project
-# 
-# This file lists all the Python dependencies needed to run the boids simulation
-# 
-# To install all requirements, run:
-# pip install -r requirements.txt
-#
-# Or for development with latest versions:
-# pip install -r requirements.txt --upgrade
+Boids Simulation - Python Dependencies
+Requires Python 3.7+ and GCC with OpenMP support
 
-# Main graphics and game library for the simulation interface
+Graphics and game development
 pygame>=2.1.0
 
-# Note: The following are Python built-in modules and don't need to be installed:
-# - ctypes (for C library interface)
-# - platform (for OS detection)
-# - enum (for enumerations) 
-# - sys, os, time, math (standard library modules)
+Note: This project also requires:
+- GCC compiler with OpenMP support (libgomp)
+- Make utility for building the C library
+- On Ubuntu/Debian: sudo apt-get install gcc libomp-dev make
+- On macOS: brew install gcc make (or Xcode Command Line Tools)
+- On Windows: MinGW-w64 or Visual Studio Build Tools with OpenMP
+
