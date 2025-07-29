@@ -130,7 +130,6 @@ class ToggleButton(Button):
         
         super().draw(surface)
 
-
 # --- UI MANAGER CLASS ---
 
 class UI:
@@ -392,11 +391,12 @@ class UI:
         self.controls.append(self.apply_boids_button)
 
         self.behavior_buttons = [
-            Button("Turn", lambda: setattr(globals, 'BOUNDARY_BEHAVIOR', globals.BoundaryBehavior.BOUNDARY_TURN)),
-            Button("Bounce", lambda: setattr(globals, 'BOUNDARY_BEHAVIOR', globals.BoundaryBehavior.BOUNDARY_BOUNCE)),
-            Button("Wrap", lambda: setattr(globals, 'BOUNDARY_BEHAVIOR', globals.BoundaryBehavior.BOUNDARY_WRAP))
+            Button("Turn", lambda: self._set_boundary_behavior(globals.BoundaryBehavior.BOUNDARY_TURN)),
+            Button("Bounce", lambda: self._set_boundary_behavior(globals.BoundaryBehavior.BOUNDARY_BOUNCE)),
+            Button("Wrap", lambda: self._set_boundary_behavior(globals.BoundaryBehavior.BOUNDARY_WRAP))
         ]
         self.controls.extend(self.behavior_buttons)
+        self._update_behavior_button_colors()
 
         self.main_buttons = [
             Button("Pause", self.toggle_pause, color=(120, 50, 50)),
@@ -465,6 +465,9 @@ class UI:
         if self.boid_count_slider.val != self.staged_boid_count:
              self.boid_count_slider.val = self.staged_boid_count
              self.boid_count_slider.callback(self.staged_boid_count)
+        
+        # Atualiza as cores dos botões de comportamento
+        self._update_behavior_button_colors()
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -511,6 +514,37 @@ class UI:
             self.pause_button.color = (120, 50, 50)
         self.pause_button.hover_color = tuple(min(c + 25, 255) for c in self.pause_button.color)
         self.pause_button.font_surface = self.font_medium.render(self.pause_button.label, True, (255, 255, 255))
+
+    def _set_boundary_behavior(self, behavior):
+        """Define o comportamento de fronteira e atualiza as cores dos botões."""
+        globals.BOUNDARY_BEHAVIOR = behavior
+        self._update_behavior_button_colors()
+
+    def _update_behavior_button_colors(self):
+        """Atualiza as cores dos botões de comportamento baseado no estado atual."""
+        current_behavior = globals.BOUNDARY_BEHAVIOR
+        
+        # Mapeia cada botão ao seu comportamento correspondente
+        behavior_map = [
+            globals.BoundaryBehavior.BOUNDARY_TURN,
+            globals.BoundaryBehavior.BOUNDARY_BOUNCE,
+            globals.BoundaryBehavior.BOUNDARY_WRAP
+        ]
+        
+        for i, button in enumerate(self.behavior_buttons):
+            if behavior_map[i] == current_behavior:
+                # Botão ativo - verde
+                button.color = (50, 120, 50)
+            else:
+                # Botões inativos - vermelho
+                button.color = (120, 50, 50)
+            
+            # Atualiza a cor de hover
+            button.hover_color = tuple(min(c + 25, 255) for c in button.color)
+            
+            # Re-renderiza o texto se o botão já foi layoutado
+            if button.font:
+                button.font_surface = button.font.render(button.label, True, (255, 255, 255))
         
     def draw_fps(self):
         current_fps_text = f"FPS: {self.clock.get_fps():.0f}"

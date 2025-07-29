@@ -1,0 +1,18 @@
+# Requirements for CLP Boids Simulation Project
+# 
+# This file lists all the Python dependencies needed to run the boids simulation
+# 
+# To install all requirements, run:
+# pip install -r requirements.txt
+#
+# Or for development with latest versions:
+# pip install -r requirements.txt --upgrade
+
+# Main graphics and game library for the simulation interface
+pygame>=2.1.0
+
+# Note: The following are Python built-in modules and don't need to be installed:
+# - ctypes (for C library interface)
+# - platform (for OS detection)
+# - enum (for enumerations) 
+# - sys, os, time, math (standard library modules)
