@@ -1,0 +1,12 @@
+Boids Simulation - Python Dependencies
+Requires Python 3.7+ and GCC with OpenMP support
+
+Graphics and game development
+pygame>=2.1.0
+
+Note: This project also requires:
+- GCC compiler with OpenMP support (libgomp)
+- Make utility for building the C library
+- On Ubuntu/Debian: sudo apt-get install gcc libomp-dev make
+- On macOS: brew install gcc make (or Xcode Command Line Tools)
+- On Windows: MinGW-w64 or Visual Studio Build Tools with OpenMP
