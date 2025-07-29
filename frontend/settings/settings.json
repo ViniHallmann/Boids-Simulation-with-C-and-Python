@@ -7,5 +7,10 @@
     "Max Speed": 6.0,
     "Visual Range": 45.0,
     "Protected Range": 6.0,
-    "Boids Count": 2900.0
+    "Mouse Influence": true,
+    "Show Margin": true,
+    "Show Visual Range": false,
+    "Show Protected Range": false,
+    "Dynamic Colors": true,
+    "Boids Count": 1500
 }

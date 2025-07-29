@@ -127,9 +127,7 @@ static void enforce_bounce_screen(Entity* boid, float bounce_factor, int width, 
 
 static void enforce_mouse_events(Entity* boid, int mouse_x, int mouse_y, bool mouse_motion, bool mouse_fear, bool mouse_attraction,  int mouse_fear_radius, int mouse_attraction_radius){
     if (!mouse_motion) return;
-    if (mouse_fear && mouse_attraction) {
-        return; // If both are active, do nothing
-    }
+    if (mouse_fear && mouse_attraction) {return;}
     if (mouse_fear) {
         apply_mouse_events(boid, mouse_x, mouse_y, mouse_fear_radius, -1.0f);
     }

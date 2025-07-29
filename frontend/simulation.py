@@ -28,13 +28,13 @@ class Simulation:
         Só atualiza se não estiver pausada.
         """
         if not globals.PAUSED:
-            # --- LÓGICA DE ATIVAÇÃO DO MOUSE ---
-            # TA quebrado sla arruma ai
-            # mouse_over_ui = False
-            # if globals.UI_PANEL_RECT and globals.SHOW_UI_PANEL:
-            #     mouse_over_ui = globals.UI_PANEL_RECT.collidepoint(pygame.mouse.get_pos())
+            mouse_over_ui = False
+            if globals.UI_PANEL_RECT and globals.SHOW_UI_PANEL:
+                mouse_pos = pygame.mouse.get_pos()
+                if globals.UI_PANEL_RECT.collidepoint(mouse_pos):
+                    mouse_over_ui = True
 
-            # mouse_is_active = globals.MOUSE_MOTION and pygame.mouse.get_focused() and not mouse_over_ui
+            mouse_is_active = globals.MOUSE_MOTION and pygame.mouse.get_focused() and not mouse_over_ui
 
             state.boids_lib.update_boids(
                 self.boids,                      # 1
@@ -54,8 +54,7 @@ class Simulation:
                 globals.MARGIN,                  # 15
                 globals.MOUSE_POS[0],            # 16
                 globals.MOUSE_POS[1],            # 17
-                #mouse_is_active,                 # 18
-                globals.MOUSE_MOTION,            # 18
+                mouse_is_active,                 # 18
                 globals.MOUSE_FEAR,              # 19
                 globals.MOUSE_ATTRACTION,        # 20
                 globals.MOUSE_FEAR_RADIUS,       # 21
