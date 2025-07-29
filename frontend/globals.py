@@ -14,7 +14,7 @@ DEFAULT_SETTINGS = {
     "MAX_SPEED": 6.0,
     "BOUNCE_FACTOR": 0.1,
     "BOUNDARY_BEHAVIOR": BoundaryBehavior.BOUNDARY_TURN,
-    "NUM_BIRDS": 1500,
+    "NUM_BIRDS": 1250,
     "MARGIN_LINE": True,
     "DRAW_PROTECTED_RANGE": False,
     "DRAW_VISUAL_RANGE": False,
