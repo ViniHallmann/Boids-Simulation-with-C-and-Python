@@ -381,7 +381,7 @@ class UI:
         
         self.toggles = [
             ToggleButton("Mouse Influence", globals.MOUSE_MOTION, lambda s: setattr(globals, 'MOUSE_MOTION', s)),
-            ToggleButton("Margin", globals.MARGIN_LINE, lambda s: setattr(globals, 'MARGIN_LINE', s)),
+            ToggleButton("Margin", globals.MARGIN_LINE, self._handle_margin_toggle),
             ToggleButton("Visual Range", globals.DRAW_VISUAL_RANGE, lambda s: setattr(globals, 'DRAW_VISUAL_RANGE', s)),
             ToggleButton("Protected Range", globals.DRAW_PROTECTED_RANGE, lambda s: setattr(globals, 'DRAW_PROTECTED_RANGE', s)),
             ToggleButton("Dynamic Colors", globals.DYNAMIC_COLOR_ENABLED, lambda s: setattr(globals, 'DYNAMIC_COLOR_ENABLED', s)),
@@ -401,6 +401,8 @@ class UI:
         ]
         self.controls.extend(self.behavior_buttons)
         self._update_behavior_button_colors()
+        # Atualiza o estado da margin baseado no comportamento inicial
+        self._update_margin_toggle_based_on_behavior(globals.BOUNDARY_BEHAVIOR)
 
         self.main_buttons = [
             Button("Pause", self.toggle_pause, color=(120, 50, 50)),
@@ -472,6 +474,8 @@ class UI:
         
         # Atualiza as cores dos botões de comportamento
         self._update_behavior_button_colors()
+        # Atualiza o estado da margin baseado no comportamento atual
+        self._update_margin_toggle_based_on_behavior(globals.BOUNDARY_BEHAVIOR)
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -523,6 +527,7 @@ class UI:
         """Define o comportamento de fronteira e atualiza as cores dos botões."""
         globals.BOUNDARY_BEHAVIOR = behavior
         self._update_behavior_button_colors()
+        self._update_margin_toggle_based_on_behavior(behavior)
 
     def _update_behavior_button_colors(self):
         """Atualiza as cores dos botões de comportamento baseado no estado atual."""
@@ -549,6 +554,40 @@ class UI:
             # Re-renderiza o texto se o botão já foi layoutado
             if button.font:
                 button.font_surface = button.font.render(button.label, True, (255, 255, 255))
+
+    def _update_margin_toggle_based_on_behavior(self, behavior):
+        """Atualiza o estado do toggle de margin baseado no comportamento de fronteira."""
+        # Encontra o toggle de margin
+        margin_toggle = None
+        for toggle in self.toggles:
+            if toggle.label == "Margin":
+                margin_toggle = toggle
+                break
+        
+        if margin_toggle:
+            # Se for BOUNCE ou WRAP, desabilita a margin
+            if behavior in [globals.BoundaryBehavior.BOUNDARY_BOUNCE, globals.BoundaryBehavior.BOUNDARY_WRAP]:
+                if margin_toggle.state:  # Se estava ativado, desativa
+                    margin_toggle.toggle()
+            # Se for TURN, não força nenhum estado (deixa o usuário controlar)
+
+    def _handle_margin_toggle(self, state):
+        """Callback customizado para o toggle de margin que verifica o comportamento."""
+        # Só permite ativar margin se o comportamento for TURN
+        if state and globals.BOUNDARY_BEHAVIOR != globals.BoundaryBehavior.BOUNDARY_TURN:
+            print("P: Margin só pode ser ativada no modo TURN")
+            # Encontra o toggle de margin e força o estado para False
+            for toggle in self.toggles:
+                if toggle.label == "Margin":
+                    if toggle.state:  # Se estava ativado, desativa
+                        toggle.state = False
+                        toggle.color = toggle.get_color()
+                        toggle.hover_color = tuple(min(c + 25, 255) for c in toggle.color)
+                    break
+            return  # Não altera o estado global se não for permitido
+        
+        globals.MARGIN_LINE = state
+        
         
     def draw_fps(self):
         current_fps_text = f"FPS: {self.clock.get_fps():.0f}"
