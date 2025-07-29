@@ -552,7 +552,7 @@ class UI:
             elif isinstance(control, Button):
                 control.draw(surface)
         
-        # Desenha texto dinâmico
+        #DESENHO TEXTO DINAMICOS
         boid_count_text = self.font_tiny.render(f"Current: {globals.NUM_BIRDS} | Target: {int(self.staged_boid_count)}", True, (200, 200, 200))
         surface.blit(boid_count_text, (self.boid_count_slider.rect.x, self.boid_count_slider.rect.y - 25))
     
@@ -571,6 +571,7 @@ class UI:
         globals.UI_PANEL_RECT = self.panel_rect
     
     def draw(self):
+        
         self.draw_fps()
         self._draw_toggle_button()
         if self.current_x < self.screen.get_width():
