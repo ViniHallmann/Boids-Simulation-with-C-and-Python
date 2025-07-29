@@ -1,6 +1,7 @@
 import pygame
 import globals
 import math
+#from UICOPY import UI
 from UI import UI
 
 class Renderer:
@@ -151,29 +152,20 @@ class Renderer:
         """
         entities = simulation.boids.contents.entities
         draw_boid_func = self.draw_boid
+        num_birds    = globals.NUM_BIRDS
+        margin_width = globals.MARGIN_WIDTH
+        dash_length  = globals.MARGIN_DASH_LENGTH
 
         self.draw_background()
 
-        for i in range(globals.NUM_BIRDS):
+        for i in range(num_birds):
             draw_boid_func(entities[i])
         
         self.draw_boids_range(simulation)
-        self.draw_margins(globals.MARGIN_WIDTH, globals.MARGIN_DASH_LENGTH)
+        self.draw_margins(margin_width, dash_length)
 
-        self.UI.update()
         self.UI.draw()
-
-        #RESPONSABILIDADE DA UI ESSE BOTAO
-        # panel_edge_x = self.UI.panel_rect.x
-        
-        # current_surf = self.hide_panel_surf if globals.SHOW_UI_PANEL else self.show_panel_surf
-        
-        # self.toggle_button_rect = current_surf.get_rect(
-        #     centery=globals.SCREEN_HEIGHT // 2,
-        #     right=panel_edge_x - 5
-        # )
-
-        # self.screen.blit(current_surf, self.toggle_button_rect)
+        self.UI.update()
 
         pygame.display.flip()
 

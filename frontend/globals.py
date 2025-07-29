@@ -42,7 +42,7 @@ MARGIN_LINE:        bool = DEFAULT_SETTINGS["MARGIN_LINE"]
 DRAW_PROTECTED_RANGE: bool = DEFAULT_SETTINGS["DRAW_PROTECTED_RANGE"]
 DRAW_VISUAL_RANGE:    bool = DEFAULT_SETTINGS["DRAW_VISUAL_RANGE"]
 
-SHOW_UI_PANEL = True
+SHOW_UI_PANEL = False
 PAUSED: bool = False
 
 BIRD_SIZE: int = 3
@@ -72,11 +72,10 @@ MOUSE_ATTRACTION:   bool = False
 MOUSE_FEAR_RADIUS:          int = 100
 MOUSE_ATTRACTION_RADIUS:    int = 200
 
-# --- CRITICAL VARIABLES ---
 SCREEN_WIDTH:           int = 1300
 SCREEN_HEIGHT:          int = 700
 NUM_BIRDS:              int = DEFAULT_SETTINGS["NUM_BIRDS"]
-UI_PANEL_RECT = None # Usado pela UI e Simulação
+UI_PANEL_RECT = None 
 
 # Platform-specific configurations
 PLATFORM_SYSTEM: str = platform.system()
