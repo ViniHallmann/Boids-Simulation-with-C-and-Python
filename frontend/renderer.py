@@ -1,7 +1,6 @@
 import pygame
 import globals
 import math
-#from UICOPY import UI
 from UI import UI
 
 class Renderer:
