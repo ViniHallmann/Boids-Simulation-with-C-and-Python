@@ -369,8 +369,8 @@ class UI:
             Slider("Cohesion", 0.0, 150.0, globals.DEFAULT_SETTINGS["CENTERING_FACTOR"] * 4000, lambda v: setattr(globals, 'CENTERING_FACTOR', v), value_factor=0.00025),
             Slider("Separation", 0.0, 3.0, globals.DEFAULT_SETTINGS["AVOID_FACTOR"] * 10, lambda v: setattr(globals, 'AVOID_FACTOR', v), value_factor=0.1),
             Slider("Alignment", 0.0, 8.0, globals.DEFAULT_SETTINGS["MATCHING_FACTOR"] * 20, lambda v: setattr(globals, 'MATCHING_FACTOR', v), value_factor=0.05),
-            self.min_speed_slider, # Adiciona o slider de min speed à lista
-            self.max_speed_slider  # Adiciona o slider de max speed à lista
+            self.min_speed_slider,
+            self.max_speed_slider  
         ]
         self.controls.extend(self.sliders)
         
@@ -508,10 +508,10 @@ class UI:
 
     def update_pause_button_state(self):
         if globals.PAUSED:
-            self.pause_button.label = "▶ Play"
+            self.pause_button.label = "Play"
             self.pause_button.color = (50, 120, 50)
         else:
-            self.pause_button.label = "❚❚ Pause"
+            self.pause_button.label = "Pause"
             self.pause_button.color = (120, 50, 50)
         self.pause_button.hover_color = tuple(min(c + 25, 255) for c in self.pause_button.color)
         self.pause_button.font_surface = self.font_medium.render(self.pause_button.label, True, (255, 255, 255))
