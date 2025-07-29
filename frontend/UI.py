@@ -139,6 +139,7 @@ class UI:
         self.screen = screen
         self.clock = clock
         self.controls = []
+        self.input_handler = None  # Referência para o input_handler
         
         self.font_large  = pygame.font.Font(None, 36)
         self.font_medium = pygame.font.Font(None, 24)
@@ -185,6 +186,10 @@ class UI:
         self.content_surface = pygame.Surface((self.panel_width, self.content_height))
 
         print("P: UI inicializada com sucesso (versão com Import/Export).")
+
+    def set_input_handler_reference(self, input_handler):
+        """Define a referência ao input_handler para comunicação bidirecional."""
+        self.input_handler = input_handler
 
     def _update_max_speed(self, new_max_speed):
         """Callback para o slider de Max Speed."""
@@ -381,7 +386,7 @@ class UI:
         
         self.toggles = [
             ToggleButton("Mouse Influence", globals.MOUSE_MOTION, lambda s: setattr(globals, 'MOUSE_MOTION', s)),
-            ToggleButton("Margin", globals.MARGIN_LINE, lambda s: setattr(globals, 'MARGIN_LINE', s)),
+            ToggleButton("Margin", globals.MARGIN_LINE, self._handle_margin_toggle),
             ToggleButton("Visual Range", globals.DRAW_VISUAL_RANGE, lambda s: setattr(globals, 'DRAW_VISUAL_RANGE', s)),
             ToggleButton("Protected Range", globals.DRAW_PROTECTED_RANGE, lambda s: setattr(globals, 'DRAW_PROTECTED_RANGE', s)),
             ToggleButton("Dynamic Colors", globals.DYNAMIC_COLOR_ENABLED, lambda s: setattr(globals, 'DYNAMIC_COLOR_ENABLED', s)),
@@ -401,6 +406,8 @@ class UI:
         ]
         self.controls.extend(self.behavior_buttons)
         self._update_behavior_button_colors()
+        # Atualiza o estado da margin baseado no comportamento inicial
+        self._update_margin_toggle_based_on_behavior(globals.BOUNDARY_BEHAVIOR)
 
         self.main_buttons = [
             Button("Pause", self.toggle_pause, color=(120, 50, 50)),
@@ -472,6 +479,8 @@ class UI:
         
         # Atualiza as cores dos botões de comportamento
         self._update_behavior_button_colors()
+        # Atualiza o estado da margin baseado no comportamento atual
+        self._update_margin_toggle_based_on_behavior(globals.BOUNDARY_BEHAVIOR)
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -523,6 +532,7 @@ class UI:
         """Define o comportamento de fronteira e atualiza as cores dos botões."""
         globals.BOUNDARY_BEHAVIOR = behavior
         self._update_behavior_button_colors()
+        self._update_margin_toggle_based_on_behavior(behavior)
 
     def _update_behavior_button_colors(self):
         """Atualiza as cores dos botões de comportamento baseado no estado atual."""
@@ -549,6 +559,77 @@ class UI:
             # Re-renderiza o texto se o botão já foi layoutado
             if button.font:
                 button.font_surface = button.font.render(button.label, True, (255, 255, 255))
+
+    def _update_margin_toggle_based_on_behavior(self, behavior):
+        """Atualiza o estado do toggle de margin baseado no comportamento de fronteira."""
+        # Encontra o toggle de margin
+        margin_toggle = None
+        for toggle in self.toggles:
+            if toggle.label == "Margin":
+                margin_toggle = toggle
+                break
+        
+        if margin_toggle:
+            # Se for BOUNCE ou WRAP, desabilita a margin
+            if behavior in [globals.BoundaryBehavior.BOUNDARY_BOUNCE, globals.BoundaryBehavior.BOUNDARY_WRAP]:
+                if margin_toggle.state:  # Se estava ativado, desativa
+                    margin_toggle.toggle()
+            # Se for TURN, não força nenhum estado (deixa o usuário controlar)
+
+    def _handle_margin_toggle(self, state):
+        """Callback customizado para o toggle de margin que verifica o comportamento."""
+        # Só permite ativar margin se o comportamento for TURN
+        if state and globals.BOUNDARY_BEHAVIOR != globals.BoundaryBehavior.BOUNDARY_TURN:
+            print("P: Margin só pode ser ativada no modo TURN")
+            # Encontra o toggle de margin e força o estado para False
+            for toggle in self.toggles:
+                if toggle.label == "Margin":
+                    if toggle.state:  # Se estava ativado, desativa
+                        toggle.state = False
+                        toggle.color = toggle.get_color()
+                        toggle.hover_color = tuple(min(c + 25, 255) for c in toggle.color)
+                    break
+            return  # Não altera o estado global se não for permitido
+        
+        globals.MARGIN_LINE = state
+
+    def sync_toggles_with_globals(self):
+        """Sincroniza o estado dos toggles com as variáveis globais."""
+        toggle_map = {
+            "Mouse Influence": globals.MOUSE_MOTION,
+            "Margin": globals.MARGIN_LINE,
+            "Visual Range": globals.DRAW_VISUAL_RANGE,
+            "Protected Range": globals.DRAW_PROTECTED_RANGE,
+            "Dynamic Colors": globals.DYNAMIC_COLOR_ENABLED
+        }
+        
+        for toggle in self.toggles:
+            if toggle.label in toggle_map:
+                expected_state = toggle_map[toggle.label]
+                if toggle.state != expected_state:
+                    # Atualiza silenciosamente sem chamar o callback
+                    toggle.state = expected_state
+                    toggle.color = toggle.get_color()
+                    toggle.hover_color = tuple(min(c + 25, 255) for c in toggle.color)
+                    if toggle.font:
+                        toggle.font_surface = toggle.font.render(toggle.label, True, (255, 255, 255))
+
+    def sync_behavior_buttons_with_globals(self):
+        """Sincroniza o estado dos botões de comportamento com as variáveis globais."""
+        self._update_behavior_button_colors()
+        self._update_margin_toggle_based_on_behavior(globals.BOUNDARY_BEHAVIOR)
+
+    def sync_pause_button_with_globals(self):
+        """Sincroniza o estado do botão de pause com as variáveis globais."""
+        self.update_pause_button_state()
+
+    def sync_all_with_globals(self):
+        """Sincroniza todos os componentes da UI com as variáveis globais."""
+        self.sync_toggles_with_globals()
+        self.sync_behavior_buttons_with_globals()
+        self.sync_pause_button_with_globals()
+        
+        
         
     def draw_fps(self):
         current_fps_text = f"FPS: {self.clock.get_fps():.0f}"

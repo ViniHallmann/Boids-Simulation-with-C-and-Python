@@ -1,6 +1,23 @@
 import pygame
 import globals
 
+"""
+InputHandler - Gerencia eventos de teclado e mouse
+Teclas disponíveis:
+- Q/ESC: Fechar aplicação
+- B: Toggle Blur
+- M: Toggle Mouse Influence (UI sincronizada)
+- P: Toggle Protected Range drawing (UI sincronizada)
+- V: Toggle Visual Range drawing (UI sincronizada)
+- D: Ativar modo debug (ambos os ranges) (UI sincronizada)
+- F: Desativar modo debug (UI sincronizada)
+- H: Toggle UI Panel
+- SPACE: Pause/Play (UI sincronizada)
+- 6: Boundary Behavior = TURN (UI sincronizada)
+- 7: Boundary Behavior = BOUNCE (UI sincronizada)
+- 8: Boundary Behavior = WRAP (UI sincronizada)
+"""
+
 class InputHandler:
     def __init__(self, app):
         """
@@ -8,7 +25,17 @@ class InputHandler:
         Recebe a instância da App para poder alterar seu estado (ex: self.app.running).
         """
         self.app = app
+        self.ui = None  # Será definido após a UI ser criada
         self._setup_event_handlers()
+
+    def set_ui_reference(self, ui):
+        """Define a referência à UI para permitir sincronização."""
+        self.ui = ui
+
+    def _sync_ui(self):
+        """Sincroniza a UI com as variáveis globais após mudanças."""
+        if self.ui:
+            self.ui.sync_all_with_globals()
 
     def process_events(self):
         """
@@ -62,35 +89,44 @@ class InputHandler:
         elif event.key == pygame.K_m:
             globals.MOUSE_MOTION = not globals.MOUSE_MOTION
             print(f"P: MOUSE_MOTION {'ativado' if globals.MOUSE_MOTION else 'desativado'}.")
+            self._sync_ui()
         elif event.key == pygame.K_p: 
             globals.DRAW_PROTECTED_RANGE = not globals.DRAW_PROTECTED_RANGE
             print(f"P: Desenho do raio de proteção {'ativado' if globals.DRAW_PROTECTED_RANGE else 'desativado'}.")
+            self._sync_ui()
         elif event.key == pygame.K_v: 
             globals.DRAW_VISUAL_RANGE = not globals.DRAW_VISUAL_RANGE
             print(f"P: Desenho do raio de visualização {'ativado' if globals.DRAW_VISUAL_RANGE else 'desativado'}.")
+            self._sync_ui()
         elif event.key == pygame.K_d:
             globals.DRAW_PROTECTED_RANGE = True
             globals.DRAW_VISUAL_RANGE = True
             print("P: Modo debug ativado.")
+            self._sync_ui()
         elif event.key == pygame.K_f:
             globals.DRAW_PROTECTED_RANGE = False
             globals.DRAW_VISUAL_RANGE = False
             print("P: Modo debug desativado.")
+            self._sync_ui()
         elif event.key == pygame.K_h: # HIDE UI
             globals.SHOW_UI_PANEL = not globals.SHOW_UI_PANEL
             print(f"P: Painel da UI {'visível' if globals.SHOW_UI_PANEL else 'oculto'}.")
         elif event.key == pygame.K_SPACE: # PAUSE/PLAY
             globals.PAUSED = not globals.PAUSED
             print(f"P: Simulação {'pausada' if globals.PAUSED else 'retomada'}.")
+            self._sync_ui()
         elif event.key == pygame.K_6:
             globals.BOUNDARY_BEHAVIOR = globals.BoundaryBehavior.BOUNDARY_TURN
             print("P: Comportamento de limite: TURN.")
+            self._sync_ui()
         elif event.key == pygame.K_7:
             globals.BOUNDARY_BEHAVIOR = globals.BoundaryBehavior.BOUNDARY_BOUNCE
             print("P: Comportamento de limite: BOUNCE.")
+            self._sync_ui()
         elif event.key == pygame.K_8:
             globals.BOUNDARY_BEHAVIOR = globals.BoundaryBehavior.BOUNDARY_WRAP
             print("P: Comportamento de limite: WRAP.")
+            self._sync_ui()
 
     def _mouse_motion(self, event):
         """

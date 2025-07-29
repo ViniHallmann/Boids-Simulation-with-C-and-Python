@@ -14,6 +14,11 @@ class App:
         self.clock          = pygame.time.Clock()
         self.renderer       = Renderer(self.clock)
         self.input_handler  = InputHandler(self)
+        
+        # Estabelece a conexão bidirecional entre input_handler e UI
+        self.input_handler.set_ui_reference(self.renderer.UI)
+        self.renderer.UI.set_input_handler_reference(self.input_handler)
+        
         self.running        = True
 
     def run(self):
