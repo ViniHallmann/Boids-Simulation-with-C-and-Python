@@ -25,7 +25,7 @@ class Slider:
 
     def layout(self, x, y, width, height, font):
         self.rect = pygame.Rect(x, y, width, height)
-        self.handle_radius = max(6, height // 3)  # Menor e com tamanho mínimo
+        self.handle_radius = max(6, height // 3) 
         label_text = f"{self.label}:"
         self.font_surface = font.render(label_text, True, (180, 190, 210))
 
@@ -65,13 +65,14 @@ class Slider:
         if self.value_surface:
             surface.blit(self.value_surface, (self.rect.right - self.value_surface.get_width(), self.rect.y - 18))
         
-        pygame.draw.rect(surface, (40, 45, 60), self.rect, border_radius=self.rect.height // 2)
+        pygame.draw.rect(surface, (40, 45, 60), self.rect, border_radius=2)
 
         if self.max_val > self.min_val:
             handle_x = self.rect.x + (self.val - self.min_val) / (self.max_val - self.min_val) * self.rect.width
-            pygame.draw.circle(surface, (166, 181, 176), (int(handle_x), self.rect.centery), self.handle_radius + 1)
+            pygame.draw.circle(surface, (120, 140, 160), (int(handle_x), self.rect.centery), self.handle_radius + 2)
+            pygame.draw.circle(surface, (200, 215, 210), (int(handle_x), self.rect.centery), self.handle_radius)
         else:
-            pygame.draw.circle(surface, (100, 150, 255), (self.rect.x, self.rect.centery), self.handle_radius + 1)
+            pygame.draw.circle(surface, (100, 150, 255), (self.rect.x, self.rect.centery), self.handle_radius)
 
 
 class Button:
@@ -84,8 +85,8 @@ class Button:
         self.rect = None
         self.font = None
         self.font_surface  = None
-        self.border_radius: int = 12
-        self.width: int = 2
+        self.border_radius: int = 8  
+        self.width: int = 1           
 
     def layout(self, x, y, width, height, font):
         self.rect = pygame.Rect(x, y, width, height)
@@ -106,7 +107,7 @@ class Button:
     def draw(self, surface):
         color = self.hover_color if self.hovering else self.color
         pygame.draw.rect(surface, color, self.rect, border_radius=self.border_radius)
-        pygame.draw.rect(surface, (100, 100, 100), self.rect, width=self.width, border_radius=self.border_radius - 3)
+        pygame.draw.rect(surface, (80, 85, 95), self.rect, width=self.width, border_radius=self.border_radius - 1)
         text_rect = self.font_surface.get_rect(center=self.rect.center)
         surface.blit(self.font_surface, text_rect)
 
@@ -265,7 +266,7 @@ class UI:
         Retorna a altura total do conteúdo.
         """
         x_margin = 10
-        scrollbar_gutter = 20
+        scrollbar_gutter = 16  # Espaço reduzido para scrollbar mais fino
         content_width = self.panel_width - x_margin - scrollbar_gutter
         y_cursor = 20
         
@@ -285,68 +286,69 @@ class UI:
         for line in instructions:
             instruction_surf = self.font_small.render(line, True, (180, 180, 180))
             self.static_surfaces.append((instruction_surf, (x_margin, y_cursor)))
-            y_cursor += 20 
-        y_cursor += 20
+            y_cursor += 18  # Espaçamento entre linhas reduzido
+        y_cursor += 15  # Espaçamento após instruções reduzido
 
-        # Layout dos botões principais
-        button_height = 35
+        # Layout dos botões principais - design mais compacto
+        button_height = 32  # Botões ligeiramente menores
         button_width = (content_width) / 2 - 5
         self.main_buttons[0].layout(x_margin, y_cursor, button_width, button_height, self.font_medium)
         self.main_buttons[1].layout(x_margin + button_width + 10, y_cursor, button_width, button_height, self.font_medium)
-        y_cursor += 40
+        y_cursor += 38  # Espaçamento reduzido
         self.main_buttons[2].layout(x_margin, y_cursor, button_width, button_height, self.font_medium)
         self.main_buttons[3].layout(x_margin + button_width + 10, y_cursor, button_width, button_height, self.font_medium)
-        y_cursor += 45
-        self.main_buttons[4].layout(x_margin, y_cursor, content_width, button_height + 5, self.font_medium)
-        y_cursor += 50
+        y_cursor += 42  # Espaçamento reduzido
+        self.main_buttons[4].layout(x_margin, y_cursor, content_width, button_height + 3, self.font_medium)
+        y_cursor += 45  # Espaçamento reduzido
 
         # Layout das seções
         def layout_section(title, controls, start_y, spacing, font, layout_func):
-            start_y += 5
+            start_y += 8  # Espaçamento superior reduzido
             header_surf = font.render(title, True, (180, 190, 210))
             self.static_surfaces.append((header_surf, (x_margin, start_y)))
-            y = start_y + 40
+            y = start_y + 35  # Espaçamento entre título e controles reduzido
             for control in controls:
                 layout_func(control, y)
                 y += spacing
             return y
         
-        slider_layout = lambda ctrl, y: ctrl.layout(x_margin, y, content_width, 15, self.font_tiny)
-        y_cursor = layout_section("Behavior", self.sliders, y_cursor, 35, self.font_medium, slider_layout)
-        y_cursor = layout_section("Display", self.display_sliders, y_cursor, 35, self.font_medium, slider_layout)
+        slider_layout = lambda ctrl, y: ctrl.layout(x_margin, y, content_width, 12, self.font_tiny)  # Sliders mais finos
+        y_cursor = layout_section("Behavior", self.sliders, y_cursor, 32, self.font_medium, slider_layout)  # Espaçamento entre sliders reduzido
+        y_cursor = layout_section("Display", self.display_sliders, y_cursor, 32, self.font_medium, slider_layout)
         
-        y_cursor += 5
+        y_cursor += 8  # Espaçamento reduzido antes da próxima seção
         header_surf = self.font_medium.render("Boundary Behavior", True, (220, 220, 220))
         self.static_surfaces.append((header_surf, (x_margin, y_cursor)))
-        y_cursor += 40
+        y_cursor += 35  # Espaçamento reduzido
         
         button_width_bh = (content_width) / 3 - 8
         for i, btn in enumerate(self.behavior_buttons):
-            btn.layout(x_margin + i * (button_width_bh + 10), y_cursor, button_width_bh, 30, self.font_small)
+            btn.layout(x_margin + i * (button_width_bh + 10), y_cursor, button_width_bh, 28, self.font_small)  # Botões ligeiramente menores
+        y_cursor += 38  # Espaçamento reduzido após botões
 
-        y_cursor += 50
+        y_cursor += 8   # Espaçamento reduzido antes de Debug Toggles
         header_surf = self.font_medium.render("Debug Toggles", True, (220, 220, 220))
         self.static_surfaces.append((header_surf, (x_margin, y_cursor)))
-        toggle_y = y_cursor + 40
+        toggle_y = y_cursor + 35  # Espaçamento reduzido
         
         toggle_width = (content_width - 10) / 2
         for i, toggle in enumerate(self.toggles):
             row, col = divmod(i, 2)
             x_pos = x_margin + col * (toggle_width + 10)
-            y_pos = toggle_y + row * 40
-            toggle.layout(x_pos, y_pos, toggle_width, 30, self.font_small)
+            y_pos = toggle_y + row * 35  # Espaçamento vertical entre toggles reduzido
+            toggle.layout(x_pos, y_pos, toggle_width, 28, self.font_small)  # Botões menores
         num_toggle_rows = (len(self.toggles) + 1) // 2
-        y_cursor = toggle_y + num_toggle_rows * 40
+        y_cursor = toggle_y + num_toggle_rows * 35
 
-        y_cursor += 15
+        y_cursor += 12  # Espaçamento reduzido antes de Population
         header_surf = self.font_medium.render("Population", True, (220, 220, 220))
         self.static_surfaces.append((header_surf, (x_margin, y_cursor)))
         y_cursor += 25 
         
-        self.boid_count_slider.layout(x_margin, y_cursor + 20, content_width, 20, self.font_tiny)
-        y_cursor += 35 + 20
-        self.apply_boids_button.layout(x_margin, y_cursor, content_width, 35, self.font_medium)
-        y_cursor += 50
+        self.boid_count_slider.layout(x_margin, y_cursor + 20, content_width, 12, self.font_tiny)  # Slider mais fino
+        y_cursor += 35 + 18  # Espaçamento ajustado
+        self.apply_boids_button.layout(x_margin, y_cursor, content_width, 32, self.font_medium)  # Botão ligeiramente menor
+        y_cursor += 45
         
         return y_cursor
 
@@ -417,9 +419,10 @@ class UI:
         if self.content_height <= self.panel_height:
             return
 
+        # Scrollbar mais elegante
         track_height = self.panel_height - 20
-        track_rect = pygame.Rect(self.panel_width - 12, 10, 8, track_height)
-        pygame.draw.rect(self.visible_panel, (40, 40, 50), track_rect, border_radius=4)
+        track_rect = pygame.Rect(self.panel_width - 10, 10, 6, track_height)  # Scrollbar mais fino
+        pygame.draw.rect(self.visible_panel, (35, 40, 45), track_rect, border_radius=3)
 
         handle_height = track_height * (self.panel_height / self.content_height)
         handle_height = max(handle_height, 20)
@@ -429,7 +432,7 @@ class UI:
         
         handle_y = track_rect.y + scroll_ratio * (track_height - handle_height)
         handle_rect = pygame.Rect(track_rect.x, handle_y, track_rect.width, handle_height)
-        pygame.draw.rect(self.visible_panel, (100, 110, 120), handle_rect, border_radius=4)
+        pygame.draw.rect(self.visible_panel, (90, 100, 115), handle_rect, border_radius=3)
         
     def post_restart_event(self):
         restart_event = pygame.event.Event(pygame.USEREVENT,
