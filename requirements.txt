@@ -10,3 +10,4 @@ Note: This project also requires:
 - On Ubuntu/Debian: sudo apt-get install gcc libomp-dev make
 - On macOS: brew install gcc make (or Xcode Command Line Tools)
 - On Windows: MinGW-w64 or Visual Studio Build Tools with OpenMP
+
