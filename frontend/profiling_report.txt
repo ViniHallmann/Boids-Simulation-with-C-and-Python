@@ -1,0 +1,38 @@
+         71644379 function calls (71644374 primitive calls) in 128.055 seconds
+
+   Ordered by: cumulative time
+   List reduced from 241 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000  128.055  128.055 /home/christian/Desktop/Codes/CLP/frontend/main.py:8(main)
+        1    0.064    0.064  127.873  127.873 /home/christian/Desktop/Codes/CLP/frontend/app.py:24(run)
+     5616    4.302    0.001   95.065    0.017 /home/christian/Desktop/Codes/CLP/frontend/renderer.py:148(draw)
+  7020000   13.388    0.000   73.458    0.000 /home/christian/Desktop/Codes/CLP/frontend/renderer.py:91(draw_boid)
+  7020000   30.067    0.000   33.407    0.000 /home/christian/Desktop/Codes/CLP/frontend/renderer.py:55(_get_triangle_points)
+     5616   30.336    0.005   30.368    0.005 /home/christian/Desktop/Codes/CLP/frontend/simulation.py:25(update)
+  3381250   11.439    0.000   14.786    0.000 /home/christian/Desktop/Codes/CLP/frontend/renderer.py:27(_get_color_by_speed)
+  7020000   11.346    0.000   11.346    0.000 {built-in method pygame.draw.polygon}
+     5616    0.062    0.000    9.544    0.002 /home/christian/Desktop/Codes/CLP/frontend/UI.py:688(draw)
+   264462    4.604    0.000    4.604    0.000 {method 'blit' of 'pygame.surface.Surface' objects}
+     5616    4.336    0.001    4.336    0.001 {built-in method pygame.display.flip}
+     5505    0.200    0.000    4.317    0.001 /home/christian/Desktop/Codes/CLP/frontend/UI.py:655(_draw_all_controls_to_surface)
+    16627    3.383    0.000    3.383    0.000 {method 'fill' of 'pygame.surface.Surface' objects}
+     5616    0.019    0.000    2.363    0.000 /home/christian/Desktop/Codes/CLP/frontend/renderer.py:108(draw_background)
+ 21060013    2.326    0.000    2.326    0.000 {method 'append' of 'list' objects}
+   214695    2.273    0.000    2.273    0.000 {built-in method pygame.draw.rect}
+    77070    0.221    0.000    1.992    0.000 /home/christian/Desktop/Codes/CLP/frontend/UI.py:106(draw)
+     5616    1.938    0.000    1.938    0.000 {method 'tick' of 'pygame.time.Clock' objects}
+  6762717    1.906    0.000    1.906    0.000 {built-in method builtins.min}
+ 10401250    1.545    0.000    1.545    0.000 {built-in method math.sqrt}
+    27525    0.087    0.000    1.157    0.000 /home/christian/Desktop/Codes/CLP/frontend/UI.py:129(draw)
+    49545    0.332    0.000    1.071    0.000 /home/christian/Desktop/Codes/CLP/frontend/UI.py:57(draw)
+     5616    0.023    0.000    0.949    0.000 /home/christian/Desktop/Codes/CLP/frontend/renderer.py:133(draw_margins)
+     4659    0.370    0.000    0.926    0.000 /home/christian/Desktop/Codes/CLP/frontend/renderer.py:77(_draw_dashed_rect)
+  3386773    0.912    0.000    0.912    0.000 {built-in method builtins.max}
+   652260    0.557    0.000    0.557    0.000 {built-in method pygame.draw.line}
+  3381387    0.537    0.000    0.537    0.000 {built-in method builtins.len}
+     5505    0.044    0.000    0.490    0.000 /home/christian/Desktop/Codes/CLP/frontend/UI.py:423(_draw_scrollbar)
+    33616    0.424    0.000    0.424    0.000 {method 'render' of 'pygame.font.Font' objects}
+     5616    0.056    0.000    0.405    0.000 /home/christian/Desktop/Codes/CLP/frontend/input_handler.py:40(process_events)
+
+

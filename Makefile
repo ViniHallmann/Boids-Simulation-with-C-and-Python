@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -O3 -mavx2 -Ibackend/include -fPIC -fopenmp -g -Wall -flto
+CFLAGS = -O3 -march=native -mavx2 -mfma -Ibackend/include -fPIC -fopenmp -Wall -flto -ffast-math -funroll-loops -finline-functions
 
 
 SRC_DIR = backend/src

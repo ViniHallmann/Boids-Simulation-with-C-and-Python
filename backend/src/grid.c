@@ -1,6 +1,21 @@
 #include "grid.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+
+// Pool de nós para evitar malloc/free constantes
+static BoidNode* node_pool = NULL;
+static int pool_size = 0;
+static int pool_index = 0;
+
+static BoidNode* get_node_from_pool() {
+    if (pool_index >= pool_size) {
+        // Expandir pool se necessário
+        pool_size += 1000;
+        node_pool = (BoidNode*) realloc(node_pool, pool_size * sizeof(BoidNode));
+    }
+    return &node_pool[pool_index++];
+}
 
 Grid* create_grid(int screen_width, int screen_height, float cell_size) {
     Grid* grid = (Grid*) malloc(sizeof(Grid));
@@ -20,16 +35,10 @@ Grid* create_grid(int screen_width, int screen_height, float cell_size) {
 }
 
 void clear_grid(Grid* grid) {
+    // Reset rápido - apenas zerar ponteiros, manter nós em pool
     int num_cells = grid->cols * grid->rows;
-    for (int i = 0; i < num_cells; i++) {
-        BoidNode* current = grid->cells[i];
-        while (current != NULL) {
-            BoidNode* temp = current;
-            current = current->next;
-            free(temp);
-        }
-        grid->cells[i] = NULL;
-    }
+    memset(grid->cells, 0, num_cells * sizeof(BoidNode*));
+    pool_index = 0; // Reset do pool para reutilização
 }
 
 void free_grid(Grid* grid) {
@@ -47,9 +56,8 @@ void add_to_grid(Grid* grid, Entity* boid) {
 
     int cell_index = cell_y * grid->cols + cell_x;
 
-    BoidNode* new_node = (BoidNode*) malloc(sizeof(BoidNode));
-    if (!new_node) return;
-
+    // Usar pool ao invés de malloc
+    BoidNode* new_node = get_node_from_pool();
     new_node->boid_entity = boid;
     new_node->next = grid->cells[cell_index];
     grid->cells[cell_index] = new_node;

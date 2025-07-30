@@ -2,6 +2,23 @@
 #include "grid.h" 
 #include <omp.h>
 
+// Buffer global para velocidades - evita malloc por frame
+static Velocity* velocity_buffer = NULL;
+static int buffer_capacity = 0;
+
+// Função inline para cálculo rápido de distância ao quadrado
+static inline float fast_distance_sq(float dx, float dy) {
+    return dx * dx + dy * dy;
+}
+
+static void ensure_velocity_buffer(int required_size) {
+    if (required_size > buffer_capacity) {
+        free(velocity_buffer);
+        velocity_buffer = (Velocity*) malloc(required_size * sizeof(Velocity));
+        buffer_capacity = required_size;
+    }
+}
+
 static void apply_mouse_events(Entity* boid, int mouse_x, int mouse_y, int radius, float force){
     float dx = boid->position.x - mouse_x;
     float dy = boid->position.y - mouse_y;
@@ -44,8 +61,9 @@ static void apply_flocking_rules(Boids* boids, Grid* grid, Velocity* new_velocit
 
                     float dx = boid_i->position.x - boid_j->position.x;
                     float dy = boid_i->position.y - boid_j->position.y;
-                    float squared_distance = dx * dx + dy * dy;
+                    float squared_distance = fast_distance_sq(dx, dy);
 
+                    // Early exit optimization - processar protected range primeiro
                     if (squared_distance < protected_range_sq) {
                         close_dx += dx;
                         close_dy += dy;
@@ -159,8 +177,9 @@ void update_boids(Boids* boids, Grid *grid, BoundaryBehavior behavior,
     int mouse_fear_radius, int mouse_attraction_radius){
     if (!boids || boids->count == 0) return;
 
-    Velocity* new_velocities = (Velocity*) malloc(boids->count * sizeof(Velocity));
-    if (!new_velocities) return;
+    // Usar buffer reutilizável ao invés de malloc por frame
+    ensure_velocity_buffer(boids->count);
+    Velocity* new_velocities = velocity_buffer;
 
     float visual_range_sq = visual_range * visual_range;
     float protected_range_sq = protected_range * protected_range;
@@ -193,5 +212,5 @@ void update_boids(Boids* boids, Grid *grid, BoundaryBehavior behavior,
         enforce_speed_limits(boid, max_speed, min_speed);
         enforce_movement(boid);
     }
-    free(new_velocities);
+    // Não fazer free do buffer - será reutilizado no próximo frame
 }

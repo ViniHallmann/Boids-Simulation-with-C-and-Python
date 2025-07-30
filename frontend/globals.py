@@ -2,11 +2,11 @@ import platform
 from c_definitions.c_structures import SpawnMode
 from c_definitions.c_structures import BoundaryBehavior
 
-# --- DEFAULT SETTINGS ---
+# --- DEFAULT SETTINGS (OTIMIZADOS PARA PERFORMANCE) ---
 DEFAULT_SETTINGS = {
     "TURN_FACTOR":          0.2,
-    "VISUAL_RANGE":         45.0,
-    "PROTECTED_RANGE":      6.0,
+    "VISUAL_RANGE":         40.0,  # Reduzido de 45 para menos vizinhos
+    "PROTECTED_RANGE":      5.0,   # Reduzido de 6 para menos cálculos
     "CENTERING_FACTOR":     0.0005,
     "AVOID_FACTOR":         0.1,
     "MATCHING_FACTOR":      0.05,
@@ -14,12 +14,12 @@ DEFAULT_SETTINGS = {
     "MAX_SPEED":            6.0,
     "BOUNCE_FACTOR":        0.1,
     "BOUNDARY_BEHAVIOR":    BoundaryBehavior.BOUNDARY_TURN,
-    "NUM_BIRDS":            1250,
-    "MARGIN_LINE":          True,
+    "NUM_BIRDS":            2500,  # Aumentado para testar otimizações
+    "MARGIN_LINE":          False, # Desabilitado para performance
     "DRAW_PROTECTED_RANGE": False,
     "DRAW_VISUAL_RANGE":    False,
     "MOUSE_MOTION":         True,
-    "DYNAMIC_COLOR_ENABLED": False,
+    "DYNAMIC_COLOR_ENABLED": False, # Desabilitado para performance
 }
 
 # --- NON-CRITICAL VARIABLES ---
