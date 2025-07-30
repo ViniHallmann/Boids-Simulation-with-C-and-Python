@@ -116,9 +116,9 @@ boids-simulation/
 
 ### Mouse
 
-- **Movimento:** Influencia o movimento dos boids (quando ativo)
-- **Clique Esquerdo:** Ativar modo medo (boids fogem do cursor)
-- **Clique Direito:** Ativar modo atração (boids se aproximam do cursor)
+- **Movimento:** Influencia o movimento dos boids (quando ativo). Funciona enquanto segurar o botão do mouse. 
+- **Clique Esquerdo:** Ativar modo atração (boids se aproximam do cursor)
+- **Clique Direito:** Ativar modo medo (boids fogem do cursor)
 
 ### Interface Gráfica
 
