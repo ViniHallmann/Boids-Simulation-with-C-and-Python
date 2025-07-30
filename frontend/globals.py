@@ -4,21 +4,21 @@ from c_definitions.c_structures import BoundaryBehavior
 
 # --- DEFAULT SETTINGS ---
 DEFAULT_SETTINGS = {
-    "TURN_FACTOR": 0.2,
-    "VISUAL_RANGE": 45.0,
-    "PROTECTED_RANGE": 6.0,
-    "CENTERING_FACTOR": 0.0005,
-    "AVOID_FACTOR": 0.1,
-    "MATCHING_FACTOR": 0.05,
-    "MIN_SPEED": 3.0,
-    "MAX_SPEED": 6.0,
-    "BOUNCE_FACTOR": 0.1,
-    "BOUNDARY_BEHAVIOR": BoundaryBehavior.BOUNDARY_TURN,
-    "NUM_BIRDS": 1250,
-    "MARGIN_LINE": True,
+    "TURN_FACTOR":          0.2,
+    "VISUAL_RANGE":         45.0,
+    "PROTECTED_RANGE":      6.0,
+    "CENTERING_FACTOR":     0.0005,
+    "AVOID_FACTOR":         0.1,
+    "MATCHING_FACTOR":      0.05,
+    "MIN_SPEED":            3.0,
+    "MAX_SPEED":            6.0,
+    "BOUNCE_FACTOR":        0.1,
+    "BOUNDARY_BEHAVIOR":    BoundaryBehavior.BOUNDARY_TURN,
+    "NUM_BIRDS":            1250,
+    "MARGIN_LINE":          True,
     "DRAW_PROTECTED_RANGE": False,
-    "DRAW_VISUAL_RANGE": False,
-    "MOUSE_MOTION": True,
+    "DRAW_VISUAL_RANGE":    False,
+    "MOUSE_MOTION":         True,
     "DYNAMIC_COLOR_ENABLED": False,
 }
 
@@ -36,16 +36,16 @@ MIN_SPEED:          float = DEFAULT_SETTINGS["MIN_SPEED"]
 
 MARGIN_WIDTH:       int = 2
 MARGIN_DASH_LENGTH: int = 10
-MARGIN:             int = 150
+MARGIN:             int = 125
 MARGIN_LINE:        bool = DEFAULT_SETTINGS["MARGIN_LINE"]
 
 DRAW_PROTECTED_RANGE: bool = DEFAULT_SETTINGS["DRAW_PROTECTED_RANGE"]
 DRAW_VISUAL_RANGE:    bool = DEFAULT_SETTINGS["DRAW_VISUAL_RANGE"]
 
-SHOW_UI_PANEL = False
-PAUSED: bool = False
+SHOW_UI_PANEL   = False
+PAUSED: bool    = False
 
-BIRD_SIZE: int = 3
+BIRD_SIZE:          int = 3
 BIRD_WIDTH:         int   = 1
 BIRD_RADIUS:        float = 2.5
 
@@ -72,8 +72,8 @@ MOUSE_ATTRACTION:   bool = False
 MOUSE_FEAR_RADIUS:          int = 100
 MOUSE_ATTRACTION_RADIUS:    int = 200
 
-SCREEN_WIDTH:           int = 1200
-SCREEN_HEIGHT:          int = 720
+SCREEN_WIDTH:           int = 900
+SCREEN_HEIGHT:          int = 600
 NUM_BIRDS:              int = DEFAULT_SETTINGS["NUM_BIRDS"]
 UI_PANEL_RECT = None 
 
