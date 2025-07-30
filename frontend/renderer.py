@@ -9,7 +9,10 @@ class Renderer:
         Inicializa o Pygame e a janela de exibição.
         """
         pygame.init()
-        self.screen = pygame.display.set_mode((globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT))
+        
+        #self.screen = pygame.display.set_mode((globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT))
+        #SE ACELACAO DE HARDWARE FOR UM PROBLEMA, COMENTE A LINHA ABAIXO E DESCOMENTE A LINHA ACIMA
+        self.screen = pygame.display.set_mode((globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT), pygame.DOUBLEBUF | pygame.HWSURFACE)
         self.blur_surface = pygame.Surface((globals.SCREEN_WIDTH, globals.SCREEN_HEIGHT), pygame.SRCALPHA)
         self.blur_surface.fill((0, 0, 0, globals.BLUR_TRANSPARENCY_VALUE))
         
