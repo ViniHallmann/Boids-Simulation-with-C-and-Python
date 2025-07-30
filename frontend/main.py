@@ -59,5 +59,5 @@ def main_with_profiling():
 
 if __name__ == "__main__":
     # Para usar profiling, descomente a linha abaixo e comente a main()
-    main_with_profiling()
-    #main()
+    #main_with_profiling()
+    main()
