@@ -172,9 +172,9 @@ class UI:
 
         self.header_surfaces = {}
 
-        self.toggle_button_font = pygame.font.Font(None, 50)
-        self.show_panel_surf = self.toggle_button_font.render("‹", True, (200, 200, 200))
-        self.hide_panel_surf = self.toggle_button_font.render("›", True, (200, 200, 200))
+        self.toggle_button_font = pygame.font.Font(None, 75)
+        self.show_panel_surf = self.toggle_button_font.render("<", True, (200, 200, 200))
+        self.hide_panel_surf = self.toggle_button_font.render(">", True, (200, 200, 200))
         self.toggle_button_rect = self.show_panel_surf.get_rect() 
 
         self.staged_boid_count = globals.NUM_BIRDS
@@ -629,8 +629,6 @@ class UI:
         self.sync_toggles_with_globals()
         self.sync_behavior_buttons_with_globals()
         self.sync_pause_button_with_globals()
-        
-        
         
     def draw_fps(self):
         current_fps_text = f"FPS: {self.clock.get_fps():.0f}"
