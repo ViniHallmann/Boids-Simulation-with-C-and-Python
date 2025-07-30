@@ -55,14 +55,15 @@ class Slider:
         self.callback(self.val * self.value_factor)
 
     def draw(self, surface, font):
-        surface.blit(self.font_surface, (self.rect.x, self.rect.y - 15))
+        if self.label:
+            surface.blit(self.font_surface, (self.rect.x, self.rect.y - 15))
         display_val = self.val * self.value_factor
         current_value_text = f"{display_val:.3f}" if isinstance(display_val, float) and self.step is None else f"{int(display_val)}"
         if current_value_text != self.last_value_text:
             self.last_value_text = current_value_text
             self.value_surface = font.render(current_value_text, True, (255, 255, 255))
 
-        if self.value_surface:
+        if self.value_surface and self.label:
             surface.blit(self.value_surface, (self.rect.right - self.value_surface.get_width(), self.rect.y - 18))
         
         pygame.draw.rect(surface, (40, 45, 60), self.rect, border_radius=self.rect.height // 2)
@@ -393,7 +394,7 @@ class UI:
         ]
         self.controls.extend(self.toggles)
 
-        self.boid_count_slider = Slider("Boids Count", 10, 5000, self.staged_boid_count, lambda v: setattr(self, 'staged_boid_count', v), step=10)
+        self.boid_count_slider = Slider("", 10, 5000, self.staged_boid_count, lambda v: setattr(self, 'staged_boid_count', v), step=10)
         self.controls.append(self.boid_count_slider)
         
         self.apply_boids_button = Button("Apply Count & Restart", self.post_restart_event, color=(60, 100, 140))
@@ -689,6 +690,9 @@ class UI:
         
         self.draw_fps()
         self._draw_toggle_button()
+
+        if self.current_x >= self.screen.get_width(): return
+        
         if self.current_x < self.screen.get_width():
             self.content_surface.fill((20, 25, 35))
             self._draw_all_controls_to_surface(self.content_surface)
