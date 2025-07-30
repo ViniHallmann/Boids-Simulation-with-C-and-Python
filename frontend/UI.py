@@ -4,8 +4,6 @@ import time
 import json
 import os
 
-# --- COMPONENTES DA UI REUTILIZÁVEIS ---
-
 class Slider:
     def __init__(self, label, min_val, max_val, initial_val, callback, value_factor=1.0, step=None):
         self.last_value_text = ""
@@ -25,12 +23,10 @@ class Slider:
 
     def layout(self, x, y, width, height, font):
         self.rect = pygame.Rect(x, y, width, height)
-        self.handle_radius = max(6, height // 3)  # Menor e com tamanho mínimo
+        self.handle_radius = max(6, height // 3)
         label_text = f"{self.label}:"
         self.font_surface = font.render(label_text, True, (180, 190, 210))
 
-    #isso aqui funciona MAS acho que da pra integrar com o input_handler.py e fazer com que ele lide com esses evento.
-    #att: posso fazer isso, mas acho que assim é mais escalável deixa cada componente gerenciando os próprios eventos.
     def handle_event(self, event):
         if not hasattr(event, 'pos'): return False
         if self.min_val >= self.max_val: return False
@@ -133,14 +129,12 @@ class ToggleButton(Button):
         
         super().draw(surface)
 
-# --- UI MANAGER CLASS ---
-
 class UI:
     def __init__(self, screen, clock):
         self.screen = screen
         self.clock = clock
         self.controls = []
-        self.input_handler = None  # Referência para o input_handler
+        self.input_handler = None
         
         self.font_large  = pygame.font.Font(None, 36)
         self.font_medium = pygame.font.Font(None, 24)
@@ -298,7 +292,7 @@ class UI:
         button_width = (content_width) / 2 - 5
         self.main_buttons[0].layout(x_margin, y_cursor, button_width, button_height, self.font_medium)
         self.main_buttons[1].layout(x_margin + button_width + 10, y_cursor, button_width, button_height, self.font_medium)
-        y_cursor += 40
+        y_cursor += 45
         self.main_buttons[2].layout(x_margin, y_cursor, button_width, button_height, self.font_medium)
         self.main_buttons[3].layout(x_margin + button_width + 10, y_cursor, button_width, button_height, self.font_medium)
         y_cursor += 45
@@ -323,7 +317,7 @@ class UI:
         y_cursor += 5
         header_surf = self.font_medium.render("Boundary Behavior", True, (220, 220, 220))
         self.static_surfaces.append((header_surf, (x_margin, y_cursor)))
-        y_cursor += 40
+        y_cursor += 25 
         
         button_width_bh = (content_width) / 3 - 8
         for i, btn in enumerate(self.behavior_buttons):
@@ -332,7 +326,7 @@ class UI:
         y_cursor += 50
         header_surf = self.font_medium.render("Debug Toggles", True, (220, 220, 220))
         self.static_surfaces.append((header_surf, (x_margin, y_cursor)))
-        toggle_y = y_cursor + 40
+        toggle_y = y_cursor + 25
         
         toggle_width = (content_width - 10) / 2
         for i, toggle in enumerate(self.toggles):
@@ -405,14 +399,14 @@ class UI:
             Button("Bounce", lambda: self._set_boundary_behavior(globals.BoundaryBehavior.BOUNDARY_BOUNCE)),
             Button("Wrap", lambda: self._set_boundary_behavior(globals.BoundaryBehavior.BOUNDARY_WRAP))
         ]
+
         self.controls.extend(self.behavior_buttons)
         self._update_behavior_button_colors()
-        # Atualiza o estado da margin baseado no comportamento inicial
         self._update_margin_toggle_based_on_behavior(globals.BOUNDARY_BEHAVIOR)
 
         self.main_buttons = [
-            Button("Pause", self.toggle_pause, color=(120, 50, 50)),
-            Button("Reset", self.reset_to_defaults, color=(180, 90, 80)),
+            Button("Pause", self.toggle_pause, color=(150, 50, 50)),
+            Button("Reset", self.reset_to_defaults, color=(150, 50, 50)),
             Button("Export", self._export_settings, color=(60, 70, 90)),
             Button("Import", self._import_settings, color=(60, 70, 90)),
             Button("Restart", self.post_restart_event, color=(60, 80, 120))
@@ -478,9 +472,7 @@ class UI:
              self.boid_count_slider.val = self.staged_boid_count
              self.boid_count_slider.callback(self.staged_boid_count)
         
-        # Atualiza as cores dos botões de comportamento
         self._update_behavior_button_colors()
-        # Atualiza o estado da margin baseado no comportamento atual
         self._update_margin_toggle_based_on_behavior(globals.BOUNDARY_BEHAVIOR)
 
     def handle_event(self, event):
@@ -522,10 +514,10 @@ class UI:
     def update_pause_button_state(self):
         if globals.PAUSED:
             self.pause_button.label = "Play"
-            self.pause_button.color = (50, 120, 50)
+            self.pause_button.color = (50, 150, 50)  
         else:
             self.pause_button.label = "Pause"
-            self.pause_button.color = (120, 50, 50)
+            self.pause_button.color = (150, 50, 50)
         self.pause_button.hover_color = tuple(min(c + 25, 255) for c in self.pause_button.color)
         self.pause_button.font_surface = self.font_medium.render(self.pause_button.label, True, (255, 255, 255))
 
@@ -539,7 +531,6 @@ class UI:
         """Atualiza as cores dos botões de comportamento baseado no estado atual."""
         current_behavior = globals.BOUNDARY_BEHAVIOR
         
-        # Mapeia cada botão ao seu comportamento correspondente
         behavior_map = [
             globals.BoundaryBehavior.BOUNDARY_TURN,
             globals.BoundaryBehavior.BOUNDARY_BOUNCE,
@@ -548,16 +539,12 @@ class UI:
         
         for i, button in enumerate(self.behavior_buttons):
             if behavior_map[i] == current_behavior:
-                # Botão ativo - verde
-                button.color = (50, 120, 50)
+                button.color = (50, 150, 50)
             else:
-                # Botões inativos - vermelho
-                button.color = (120, 50, 50)
+                button.color = (150, 50, 50)
             
-            # Atualiza a cor de hover
             button.hover_color = tuple(min(c + 25, 255) for c in button.color)
             
-            # Re-renderiza o texto se o botão já foi layoutado
             if button.font:
                 button.font_surface = button.font.render(button.label, True, (255, 255, 255))
 
@@ -571,11 +558,9 @@ class UI:
                 break
         
         if margin_toggle:
-            # Se for BOUNCE ou WRAP, desabilita a margin
             if behavior in [globals.BoundaryBehavior.BOUNDARY_BOUNCE, globals.BoundaryBehavior.BOUNDARY_WRAP]:
-                if margin_toggle.state:  # Se estava ativado, desativa
+                if margin_toggle.state:
                     margin_toggle.toggle()
-            # Se for TURN, não força nenhum estado (deixa o usuário controlar)
 
     def _handle_margin_toggle(self, state):
         """Callback customizado para o toggle de margin que verifica o comportamento."""
