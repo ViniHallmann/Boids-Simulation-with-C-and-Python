@@ -79,12 +79,18 @@ static void apply_flocking_rules(Boids* boids, Grid* grid, Velocity* new_velocit
 }
 
 static void enforce_speed_limits(Entity* boid, float max_speed, float min_speed) {
-    float speed = sqrtf(boid->velocity.vx * boid->velocity.vx + boid->velocity.vy * boid->velocity.vy);
-    if (speed == 0) return;
-    if (speed > max_speed) {
+    float speed_sq = boid->velocity.vx * boid->velocity.vx + boid->velocity.vy * boid->velocity.vy;
+    float max_speed_sq = max_speed * max_speed;
+    float min_speed_sq = min_speed * min_speed;
+
+    if (speed_sq == 0) return;
+
+    if (speed_sq > max_speed_sq) {
+        float speed = sqrtf(speed_sq);
         boid->velocity.vx = (boid->velocity.vx / speed) * max_speed;
         boid->velocity.vy = (boid->velocity.vy / speed) * max_speed;
-    } else if (speed < min_speed) {
+    } else if (speed_sq < min_speed_sq) {
+        float speed = sqrtf(speed_sq);
         boid->velocity.vx = (boid->velocity.vx / speed) * min_speed;
         boid->velocity.vy = (boid->velocity.vy / speed) * min_speed;
     }
