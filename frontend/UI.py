@@ -154,7 +154,7 @@ class UI:
 
         self.animation_speed = 0.15
 
-        self.visible_panel = pygame.Surface((self.panel_width, self.panel_height))
+        self.visible_panel = pygame.Surface((self.panel_width, self.panel_height), pygame.HWSURFACE | pygame.DOUBLEBUF)
         self.visible_panel.set_alpha(245)
         self.panel_rect = self.visible_panel.get_rect(topleft=(self.current_x, 0))
         globals.UI_PANEL_RECT = self.panel_rect
