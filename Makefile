@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -O3 -mavx2 -Ibackend/include -fPIC -fopenmp -g -Wall
+CFLAGS = -O3 -mavx2 -Ibackend/include -fPIC -fopenmp -g -Wall -flto
 
 
 SRC_DIR = backend/src
