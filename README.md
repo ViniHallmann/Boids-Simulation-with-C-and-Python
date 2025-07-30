@@ -2,6 +2,11 @@
 # Boids Simulation with C and Python
 Uma implementação híbrida da simulação de boids (bandos de pássaros artificiais) que combina a performance do C com a flexibilidade do Python. O projeto utiliza OpenMP para paralelização e Pygame para renderização, oferecendo uma simulação fluida e interativa de comportamentos emergentes de enxame.
 
+# Referência
+
+1. https://vanhunteradams.com/Pico/Animal_Movement/Boids-algorithm.html
+2. https://www.youtube.com/watch?v=bqtqltqcQhw&t=153s
+
 ##  Sobre o Algoritmo Boids
 O algoritmo Boids, criado por Craig Reynolds em 1986, simula o comportamento de bandos através de três regras fundamentais:
 
@@ -34,7 +39,7 @@ O algoritmo Boids, criado por Craig Reynolds em 1986, simula o comportamento de 
 
 ### Python
 
-- Python 3.7+ com pip
+- Python 3.12+ com pip
 
 ### Dependências Python
 
