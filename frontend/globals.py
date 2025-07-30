@@ -72,8 +72,8 @@ MOUSE_ATTRACTION:   bool = False
 MOUSE_FEAR_RADIUS:          int = 100
 MOUSE_ATTRACTION_RADIUS:    int = 200
 
-SCREEN_WIDTH:           int = 1300
-SCREEN_HEIGHT:          int = 700
+SCREEN_WIDTH:           int = 1200
+SCREEN_HEIGHT:          int = 720
 NUM_BIRDS:              int = DEFAULT_SETTINGS["NUM_BIRDS"]
 UI_PANEL_RECT = None 
 
