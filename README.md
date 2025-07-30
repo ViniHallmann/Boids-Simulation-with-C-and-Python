@@ -28,7 +28,7 @@ O algoritmo Boids, criado por Craig Reynolds em 1986, simula o comportamento de 
 
 ### Sistema Operacional
 
-- Linux, macOS ou Windows
+- Linux ou macOS (Não funciona em Windows, somente com WSL) 
 
 ### Compilador C
 
