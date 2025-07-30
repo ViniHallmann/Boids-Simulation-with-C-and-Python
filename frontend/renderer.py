@@ -62,31 +62,42 @@ class Renderer:
             cos_a = 1.0
             sin_a = 0.0
         else:
-            magnitude = math.sqrt(vx * vx + vy * vy)
-            cos_a = vx / magnitude
-            sin_a = vy / magnitude
+            magnitude_squared = vx * vx + vy * vy
+            if magnitude_squared > 0.0001:
+                inv_magnitude = 1.0 / math.sqrt(magnitude_squared)
+                cos_a = vx * inv_magnitude
+                sin_a = vy * inv_magnitude
+            else:
+                cos_a = 1.0
+                sin_a = 0.0
 
-        rotated_points = []
-        for mx, my in self.model_triangle:
-            rx = (mx * cos_a) - (my * sin_a)
-            ry = (mx * sin_a) + (my * cos_a)
-            rotated_points.append((rx + entity.position.x, ry + entity.position.y))
+        rotated_points = [
+            (
+                (mx * cos_a) - (my * sin_a) + entity.position.x,
+                (mx * sin_a) + (my * cos_a) + entity.position.y
+            )
+            for mx, my in self.model_triangle
+        ]
         
         return rotated_points
 
     def _draw_dashed_rect(self, surface, color, rect, width=1, dash_length=10):
         """
-        Molde de retângulo tracejado.
+        Molde de retângulo tracejado otimizado.
         """
         x, y, w, h = rect
         
-        for i in range(x, x + w, dash_length * 2):
-            pygame.draw.line(surface, color, (i, y), (i + dash_length, y), width)
-            pygame.draw.line(surface, color, (i, y + h), (i + dash_length, y + h), width)
+        step = dash_length * 2
+        
+        for i in range(x, x + w, step):
+            end_x = min(i + dash_length, x + w)
+            pygame.draw.line(surface, color, (i, y), (end_x, y), width)
+            pygame.draw.line(surface, color, (i, y + h), (end_x, y + h), width)
 
-        for i in range(y, y + h, dash_length * 2):
-            pygame.draw.line(surface, color, (x, i), (x, i + dash_length), width)
-            pygame.draw.line(surface, color, (x + w, i), (x + w, i + dash_length), width)
+        for i in range(y, y + h, step):
+            end_y = min(i + dash_length, y + h)
+            pygame.draw.line(surface, color, (x, i), (x, end_y), width)
+            pygame.draw.line(surface, color, (x + w, i), (x + w, end_y), width)
 
     def draw_boid(self, entity):
         """
