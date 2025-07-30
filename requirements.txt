@@ -2,7 +2,7 @@ Boids Simulation - Python Dependencies
 Requires Python 3.7+ and GCC with OpenMP support
 
 Graphics and game development
-pygame>=2.1.0
+pygame>=2.5.2
 
 Note: This project also requires:
 - GCC compiler with OpenMP support (libgomp)
