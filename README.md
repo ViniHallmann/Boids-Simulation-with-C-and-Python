@@ -2,11 +2,6 @@
 # Boids Simulation with C and Python
 Uma implementação híbrida da simulação de boids (bandos de pássaros artificiais) que combina a performance do C com a flexibilidade do Python. O projeto utiliza OpenMP para paralelização e Pygame para renderização, oferecendo uma simulação fluida e interativa de comportamentos emergentes de enxame.
 
-# Referência
-
-1. https://vanhunteradams.com/Pico/Animal_Movement/Boids-algorithm.html
-2. https://www.youtube.com/watch?v=bqtqltqcQhw&t=153s
-
 ##  Sobre o Algoritmo Boids
 O algoritmo Boids, criado por Craig Reynolds em 1986, simula o comportamento de bandos através de três regras fundamentais:
 
@@ -41,17 +36,12 @@ O algoritmo Boids, criado por Craig Reynolds em 1986, simula o comportamento de 
 
 - Python 3.12+ com pip
 
-### Dependências Python
-
-```
-pip install -r requirements.txt
-```
 
 ## Instalação e Execução
 
 ###  1. Clone o Repositório
 ```
-git clone <repository-url> 
+git clone https://github.com/ViniHallmann/Boids-Simulation-with-C-and-Python 
 cd boids-simulation 
 ```
 
@@ -64,10 +54,6 @@ pip install -r requirements.txt
 
 ```
 make
-```
-Ou execute os passos separadamente:
-```
-make compile
 
 make run
 ```
@@ -151,7 +137,7 @@ boids-simulation/
 ### Erro de Compilação
 
 - Verifique se o GCC está instalado e suporta OpenMP
-- No macOS, pode ser necessário usar gcc-<version> específico do Homebrew
+- No macOS, pode ser necessário usar gcc-XX específico do Homebrew (Para isso sera necessario mudar o apontamento da versao no Makefile)
 
 ### Biblioteca Não Encontrada
 
@@ -173,8 +159,8 @@ Este projeto foi desenvolvido para fins educacionais como parte do curso de Conc
 
 ### Referências 
 
-- Boids Algorithm Explanation
-- Craig Reynolds - "Flocks, Herds, and Schools: A Distributed Behavioral Model" (1987)
+1. https://vanhunteradams.com/Pico/Animal_Movement/Boids-algorithm.html
+2. https://www.youtube.com/watch?v=bqtqltqcQhw&t=153s
 
 
 
