@@ -441,7 +441,7 @@ class UI:
         pygame.event.post(restart_event)
 
     def reset_to_defaults(self):
-        print("P: Resetting UI controls to default values (no restart).")
+        print("P: Resetando configurações para os valores padrão...")
         for control in self.controls:
             if isinstance(control, Slider):
                 key_map = {
